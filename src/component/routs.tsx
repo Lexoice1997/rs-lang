@@ -1,4 +1,4 @@
-import { Route } from "react-router-dom";
+import {Route} from "react-router-dom";
 import GamesPage from "./games/games";
 import LoginPage from "./login/login";
 import RegistrationPage from "./regestration/regestration";
@@ -16,18 +16,18 @@ export const VOCABULARY_PAGE = '/vocabulary';
 export const GAMES_PAGE = '/games';
 export const STATISTIKS_PAGE = '/statistiks';
 
-const Routes = ()=>{
-    return (
-        <div>
-            <Route exact path ={'/'} render={()=> <StartPage />} />
-            <Route path={START_PAGE} render={()=> <StartPage />} />
-            <Route  path ={LOGIN_PATH} render={()=> <LoginPage/>} />
-            <Route  path ={REGISTRATION_PATH} render={()=> <RegistrationPage/>} />
-            <Route  path ={TEXTBOOK_PAGE} render={()=> <TextBookPage/>} />
-            <Route  path ={VOCABULARY_PAGE} render={()=> <VocabularyPage/>} />
-            <Route path ={GAMES_PAGE} render={()=> <GamesPage/>} />
-            <Route path ={STATISTIKS_PAGE} render={()=> <StatistiksPage/>} />
-        </div>
-    )
+const Routes = () => {
+  return (
+    <div>
+      <Route exact path={'/'} render={() => <StartPage/>}/>
+      <Route path={START_PAGE} render={() => <StartPage/>}/>
+      <Route path={LOGIN_PATH} render={() => <LoginPage/>}/>
+      <Route path={REGISTRATION_PATH} render={() => <RegistrationPage/>}/>
+      <Route path={TEXTBOOK_PAGE} render={() => <TextBookPage/>}/>
+      <Route path={VOCABULARY_PAGE} render={() => <VocabularyPage/>}/>
+      <Route path={GAMES_PAGE} render={() => <GamesPage/>}/>
+      <Route path={STATISTIKS_PAGE} render={() => <StatistiksPage/>}/>
+    </div>
+  )
 }
 export default Routes

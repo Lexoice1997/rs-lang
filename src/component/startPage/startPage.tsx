@@ -1,12 +1,10 @@
+const StartPage = () => {
 
-const StartPage = ()=>{
-
-    return (
-        <div>
-          Стартовая страница
-        </div>
-    )
+  return (
+    <div>
+      Стартовая страница
+    </div>
+  )
 };
 
-
-export default  StartPage
+export default StartPage
