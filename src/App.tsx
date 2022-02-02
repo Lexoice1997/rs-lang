@@ -1,3 +1,4 @@
+import "./App.css";
 import { HashRouter} from 'react-router-dom';
 import Header from './component/header/header';
 import NavBar from './component/navBar/navBar';
@@ -10,7 +11,7 @@ function App() {
     <div className="App">
       <HashRouter>
         <Header/>
-        <Grid container>
+        <Grid container className="background-img">
           <Grid item sm={2}>
             <NavBar />
           </Grid>
