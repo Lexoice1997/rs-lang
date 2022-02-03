@@ -6,7 +6,7 @@ import StartPage from "./startPage/startPage";
 import StatistiksPage from "./statistiks/statistiks";
 import TextBookPage from "./textbook/textbook";
 import VocabularyPage from "./vocabulary/vocabulary";
-
+import AboutPage from "./about/about";
 
 export const LOGIN_PATH = '/login';
 export const REGISTRATION_PATH = '/registration';
@@ -15,6 +15,7 @@ export const TEXTBOOK_PAGE = '/textBook';
 export const VOCABULARY_PAGE = '/vocabulary';
 export const GAMES_PAGE = '/games';
 export const STATISTIKS_PAGE = '/statistiks';
+export const ABOUT_PAGE = '/about';
 
 const Routes = () => {
   return (
@@ -27,6 +28,7 @@ const Routes = () => {
       <Route path={VOCABULARY_PAGE} render={() => <VocabularyPage/>}/>
       <Route path={GAMES_PAGE} render={() => <GamesPage/>}/>
       <Route path={STATISTIKS_PAGE} render={() => <StatistiksPage/>}/>
+      <Route path={ABOUT_PAGE} render={() => <AboutPage/>}/>
     </div>
   )
 }

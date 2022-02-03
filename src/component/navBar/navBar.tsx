@@ -1,7 +1,7 @@
 import "./navBar.scss";
 import React, {useState} from "react";
 import {NavLink} from "react-router-dom";
-import {GAMES_PAGE, START_PAGE, STATISTIKS_PAGE, TEXTBOOK_PAGE, VOCABULARY_PAGE} from "../routs";
+import {GAMES_PAGE, START_PAGE, STATISTIKS_PAGE, TEXTBOOK_PAGE, VOCABULARY_PAGE, ABOUT_PAGE} from "../routs";
 import {Container, makeStyles, Typography} from "@material-ui/core";
 import {BarChart, Book, Extension, Group, Home} from "@material-ui/icons";
 
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     [theme.breakpoints.up("sm")]: {
       color: "#555",
-      borderRight: "1px solid #999"
+      borderRight: "1px solid #94A7AE"
     }
   },
   item: {
@@ -62,7 +62,7 @@ const NavBar = () => {
         <Typography className={classes.text}>Статистика</Typography>
       </NavLink>
 
-      <NavLink to={START_PAGE} className={classes.item}>
+      <NavLink to={ABOUT_PAGE} className={classes.item}>
         <Group className={classes.icon}/>
         <Typography className={classes.text}>О команде</Typography>
       </NavLink>
