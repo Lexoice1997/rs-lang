@@ -1,9 +1,26 @@
-import { HashRouter} from 'react-router-dom';
+
+import { userInfo } from 'os';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { HashRouter, useLocation} from 'react-router-dom';
+import { getUserId } from './api/userLoginApi';
 import Header from './component/header/header';
 import NavBar from './component/navBar/navBar';
+import { checkAuthUser } from './redux/userReducer';
 
 
-function App() {
+
+const App=() => {
+  const dispatch = useDispatch(); 
+ 
+  useEffect(() => {
+    const userId = getUserId()
+    if (userId) {
+        dispatch(checkAuthUser(userId));
+    }
+}, []);
+
+  
   return (
     <div className="App">
       <HashRouter>
@@ -16,4 +33,8 @@ function App() {
   );
 }
 
-export default App;
+
+
+
+
+export default App
