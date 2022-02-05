@@ -1,4 +1,4 @@
-import api from "./userLoginApi";
+import api from "./api";
 
 export default class UserService{
     static async login(email: string, password: string){

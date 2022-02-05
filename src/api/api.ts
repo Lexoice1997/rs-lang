@@ -1,15 +1,15 @@
 import axios, { AxiosInterceptorManager, AxiosRequestConfig } from 'axios';
-import { config } from 'process';
 
 const baseUrl = 'https://rs-lang-scorpion.herokuapp.com';
 
-const api = axios.create({
-    baseURL : baseUrl
+const api = axios.create({  
+    baseURL : baseUrl  
 })
 
 api.interceptors.request.use((config: AxiosRequestConfig<any>) => {
     //@ts-ignore
     config.headers.Authorization = `Bearer ${getMeToken()}`
+   
     return config
 })
 
@@ -40,6 +40,7 @@ export const getMeToken=()=>{
     if(!user) return
     return JSON.parse(user).token
 }
+
 export const getUserId=()=>{
     const user = localStorage.getItem("user")
     if(!user) return

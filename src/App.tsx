@@ -3,7 +3,7 @@ import { userInfo } from 'os';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { HashRouter, useLocation} from 'react-router-dom';
-import { getUserId } from './api/userLoginApi';
+import { getUserId } from './api/api';
 import Header from './component/header/header';
 import NavBar from './component/navBar/navBar';
 import { checkAuthUser } from './redux/userReducer';
@@ -15,6 +15,7 @@ const App=() => {
  
   useEffect(() => {
     const userId = getUserId()
+    console.log(userId)
     if (userId) {
         dispatch(checkAuthUser(userId));
     }
