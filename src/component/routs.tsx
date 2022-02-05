@@ -4,10 +4,11 @@ import LoginPage from "./login/login";
 import RegistrationPage from "./regestration/regestration";
 import StartPage from "./startPage/startPage";
 import StatistiksPage from "./statistiks/statistiks";
-import TextBookPage from "./textbook/textbook";
+import TextBookPage from "./bookPage/book";
 import VocabularyPage from "./vocabulary/vocabulary";
+export const SPRINT_GAME = '/sprint';
+export const AUDIO_COLL_GAME = '/audiocoll';
 import AboutPage from "./about/about";
-
 export const LOGIN_PATH = '/login';
 export const REGISTRATION_PATH = '/registration';
 export const START_PAGE = '/startPage';

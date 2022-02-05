@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Dispatch } from 'react';
-import UserService from '../api/serwiceUser';
-import api from '../api/userLoginApi';
+import api from '../api/api';
 
 
 export const SET_USER = 'SET_USER';
@@ -10,11 +9,12 @@ export const SET_LOADER = 'SET_LOADER';
 export const SET_ERROR = 'SET_ERROR'
 export const SET_IS_LOGIN = 'SET_IS_LOGIN'
 
-// type ActionType = 
-// | ReturnType<typeof onLogoutAC>
-// | ReturnType<typeof setLoaderAC>
-// | ReturnType<typeof onUpdateUserDataAC>
-// | ReturnType<typeof setErrorAC>
+
+type ActionType = 
+| ReturnType<typeof loadingAC>
+| ReturnType<typeof setUserAC>
+| ReturnType<typeof setIsLoginAC>
+| ReturnType<typeof setErrorAC>
 
 export type userType = {
     message: string,
@@ -32,19 +32,20 @@ type InitialStateType = {
     user: userType
 }
 
-
-const initialState  ={
-    isLogin: false,
+//@ts-ignore
+const user = JSON.parse(localStorage.getItem('user'))
+const initialState ={
+    isLogin:  false,
     error: '',
     isLoading: false,
-    user: {}
+    user: user ? user: {}
 } 
 
-const UserReducer = (state = initialState, action: any) => {
+const UserReducer = (state = initialState, action: ActionType) => {
     
     switch (action.type) {
         case SET_USER: {
-            return { ...state, user:{ ...action.data} } ;
+            return { ...state, user:{ ...action.data} } 
         }
 
         case SET_LOADER:{
@@ -62,7 +63,7 @@ const UserReducer = (state = initialState, action: any) => {
     }
 };
 
-const loadingAC=(isLoading: boolean)=>{
+export const loadingAC=(isLoading: boolean)=>{
     return{
         type:SET_LOADER,
         isLoading
@@ -76,7 +77,7 @@ const setUserAC=(data: any)=>{
     } as const
 }
 
-const setIsLoginAC =(isLogin: boolean)=>{
+export const setIsLoginAC =(isLogin: boolean)=>{
     return{
         type: SET_IS_LOGIN,
         isLogin
@@ -90,14 +91,15 @@ const setErrorAC = (error: string)=>{
     } as const
 }
 
-export const loginUser = (email: string, password: string)=>(dispatch:any)=>{
+
+export const loginUser = (email: string, password: string)=>(dispatch:Dispatch<ActionType>)=>{
     dispatch(loadingAC(true));
     api.post('/signin', {email, password})
     .then((response)=>{
         localStorage.setItem('user', JSON.stringify(response.data))
         console.log(response.data)
         dispatch(setUserAC(response.data))
-        dispatch(setIsLoginAC(true))
+        
     })
     .catch((err)=>{
         dispatch(setErrorAC(err.response ? err.response.data : err.message))
@@ -107,14 +109,14 @@ export const loginUser = (email: string, password: string)=>(dispatch:any)=>{
     })   
 }
 
-export const createNewUser = (username:string, email:string,  password:string)=>(dispatch:any)=>{
+export const createNewUser = (username:string, email:string,  password:string)=>(dispatch: Dispatch<ActionType>)=>{
     dispatch (loadingAC(true))
     api.post('https://rs-lang-scorpion.herokuapp.com/users', {username, email, password})
     .then((response)=>{
         localStorage.setItem('user',JSON.stringify(response.data))
         console.log(response.data)
         dispatch(setUserAC(response.data))
-        dispatch(setIsLoginAC(true))
+        
     })
     .catch((err)=>{
         dispatch(setErrorAC(err.response ? err.response.data : err.message))
@@ -127,120 +129,22 @@ export const createNewUser = (username:string, email:string,  password:string)=>
 export const logaut = ()=>(dispatch: any)=>{
     localStorage.removeItem("user");
     dispatch(setUserAC({}));
-    dispatch(setIsLoginAC(false));
+    
 }
 
-export const checkAuthUser = (id: string) => (dispatch: any) => {
+export const checkAuthUser = (id: string) => (dispatch: Dispatch<ActionType>) => {
     axios.get(`https://rs-lang-scorpion.herokuapp.com/users/${id}/tokens`,)
         .then((res) => {
+            console.log(res);
+            
             localStorage.setItem("user", res.data);
             dispatch(setUserAC( res.data));
-            dispatch(setIsLoginAC(true));
+            
         })
         .catch((err) => {
             dispatch(setErrorAC(err.response ? err.response.data : err.message));
         });
 };
-
-// const initialState: InitialStateType ={
-//     isLogin: false,
-//     error: '',
-//     isLoading: false,
-//     //@ts-ignore
-//     user: JSON.parse(localStorage.getItem('user')) || {}
-// } 
-
-// export const onLogoutAC = () => {
-//     return {
-//         type: USER_LOGOUT,
-//     } as const
-// };
-// export const setLoaderAC = (loader: boolean) => {
-//     return {
-//       type: SET_LOADER,
-//       payload: loader
-//     } as const
-//   }
-// export const onUpdateUserDataAC = (data:any) => {
-//     debugger
-//     return {
-//         type: SET_USER,
-//         payload: data,
-//     } as const
-// };
-
-// export const setErrorAC = (data:string) => {
-//     return {
-//         type: SET_ERROR,
-//         payload: data,
-//     } as const
-// };
-
-// const UserReducer = (state: InitialStateType = initialState, action: ActionType) => {
-//     debugger
-//     switch (action.type) {
-//         case SET_USER: {
-//             return { ...state, user:{ ...action.payload} };
-//         }
-//         case USER_LOGOUT: {
-//             return {...state, user: {}};
-//         }
-//         case SET_LOADER:{
-//             return {...state, isLoading: action.payload}
-//         }
-//         case SET_ERROR:{
-//             return {...state, error: action.payload}
-//         }
-//         default: {
-//             return state;
-//         }
-//     }
-// };
-
-
-
-// export const createNewUser = (username:string, email:string,  password:string) => (dispatch:any) => {
-    
-//     dispatch(setLoaderAC(true));
-//     return userLoginApi
-//         .createNewUser(username,email, password)
-//         .then((data) => dispatch(onUpdateUserDataAC(data)))
-//         .catch((err) => dispatch(setErrorAC(err.response ? err.response.data : err.message)))
-//         .finally(() => dispatch(dispatch(setLoaderAC(false))));
-// };
-
-// export const loginUser = (email: string, password: string) => async (dispatch: any) => {
-//     try {
-//         dispatch(setLoaderAC(true));
-//         const data = await userLoginApi.login(email, password);
-//         const userInfo = await userLoginApi.getUserById(data.userId, data.token);
-//         dispatch(onUpdateUserDataAC({...data, ...userInfo }));
-//     } 
-//     catch (err:any) {dispatch(setErrorAC(err.response ? err.response.data : err.message));
-//     } 
-//     finally {
-//         dispatch(setLoaderAC(false));
-//     }
-// };
-
-
-
-// export const updateToken = () => (dispatch:any, getState: any) => {
-//     const user = getState().user;
-//     if (!!(user?.id) && !user.blocked) {
-//         dispatch(onUpdateUserDataAC({...user, blocked: true}))
-//         dispatch(setLoaderAC(true));
-//         return userLoginApi
-//             .updateToken(user.id, user.refreshToken)
-//             .then((data) => dispatch(onUpdateUserDataAC({...user, ...data, blocked: false})))
-//             .catch(() => dispatch(onLogoutAC()))
-//             .finally(() => {
-//                 dispatch(setLoaderAC(false));
-//             });
-//     }
-// };
-
-
 
 
 export default UserReducer;
