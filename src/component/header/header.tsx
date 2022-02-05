@@ -1,8 +1,12 @@
+
 import "./header.scss";
 import {NavLink} from "react-router-dom";
 import {LOGIN_PATH, REGISTRATION_PATH} from "../routs";
 import {AppBar, Button, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import React from "react";
+import { useDispatch } from "react-redux";
+import { logaut } from "../../redux/userReducer";
+
 
 const useStyles = makeStyles((theme) => ({
   appbar: {
@@ -23,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
 
 const Header = () => {
   const classes = useStyles();
+   const dispatch = useDispatch();
+    const logautUser=()=>{
+        dispatch(logaut())
+    }
 
   return (
     <AppBar position="static" className={classes.appbar}>
@@ -31,11 +39,11 @@ const Header = () => {
         <div className={classes.toolbar}>
           <Button variant="contained" className={classes.button}><NavLink to={LOGIN_PATH}>Вход</NavLink></Button>
           <Button variant="contained" className={classes.button}><NavLink to={REGISTRATION_PATH}>Регистрация</NavLink></Button>
+          <button onClick={logautUser}>Выйти</button>
         </div>
       </Toolbar>
     </AppBar>
   )
 };
-
 
 export default Header
