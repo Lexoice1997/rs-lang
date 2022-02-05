@@ -1,0 +1,65 @@
+.games {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  .game {
+    width: 30%;
+    margin: 75px auto;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px;
+    border-radius: 1em;
+    cursor: pointer;
+    transition: box-shadow 0.5s ease-in-out;
+
+    &__img {
+      width: 360px;
+      height: 240px;
+      border-radius: 1em;
+      background-size: contain;
+      background-repeat: no-repeat;
+      margin-bottom: 15px;
+    }
+
+    &__img-sprint {
+      background-image: url("../../assets//img/game-sprint.jpg");
+    }
+
+
+    &__img-audio {
+      background-image: url("../../assets//img/game-audio.jpg");
+    }
+
+    &__title {
+      font-size: 18px;
+      font-weight: 300;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    &__name {
+      font-size: 24px;
+      font-weight: 500;
+      padding-bottom: 10px;
+    }
+  }
+
+  .game:hover {
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0 15px 12px;
+  }
+
+  .game-1 {
+    background: #f57359;
+  }
+
+  .game-2 {
+    background: #184656;
+    color: white;
+  }
+}
