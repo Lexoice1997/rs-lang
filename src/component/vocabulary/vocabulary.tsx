@@ -1,10 +1,7 @@
 
 import CardContent from "@material-ui/core/CardContent";
 
-import Tooltip from "@material-ui/core/Tooltip";
-import FolderIcon from '@material-ui/icons/Folder';
 
-import { SECTIONS_EBOOK } from "../common/groopConstants";
 import styles from '../bookPage/boocPage.module.scss'
 
 import Card from "@material-ui/core/Card";
@@ -13,7 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerAppType } from "../../redux/store";
-import {  setDifficultWordsId, WordsType } from "../../redux/wordsReducer";
+import { setDifficultWordsId, WordsType } from "../../redux/wordsReducer";
 import { useEffect } from "react";
 
 const VocabularyPage = ()=>{

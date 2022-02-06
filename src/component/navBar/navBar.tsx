@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {NavLink} from "react-router-dom";
 import {GAMES_PAGE, START_PAGE, STATISTIKS_PAGE, TEXTBOOK_PAGE, VOCABULARY_PAGE, ABOUT_PAGE} from "../routs";
 import {Container, makeStyles, Typography} from "@material-ui/core";
-import {BarChart, Book, Extension, Group, Home} from "@material-ui/icons";
+import {BarChart, Book, Extension, Group, Home, Translate} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -46,7 +46,10 @@ const NavBar = () => {
         <Home className={classes.icon}/>
         <Typography className={classes.text}>Главная</Typography>
       </NavLink>
-
+      <NavLink to={VOCABULARY_PAGE} className={classes.item}>
+          <Translate className={classes.icon}/>
+        <Typography className={classes.text}>Сложные слова</Typography>
+      </NavLink>
       <NavLink to={TEXTBOOK_PAGE} className={classes.item}>
         <Book className={classes.icon}/>
         <Typography className={classes.text}>Учебник</Typography>
