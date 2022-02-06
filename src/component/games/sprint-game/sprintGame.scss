@@ -1,0 +1,19 @@
+.sprint-game {
+  width: 100vw;
+  //height: 100vh;
+  position: relative;
+
+  &__header {
+    top: 15px;
+    position: absolute;
+  }
+
+  .sprint-close-btn {
+    color: black;
+    padding: 0;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    transition: top .3s,right .3s;
+  }
+}
