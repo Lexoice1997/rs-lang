@@ -11,7 +11,13 @@ export const SET_ERROR_WORDS = 'SET_ERROR_WORDS';
 export const CREATE_DIFFICALTY_WORDS= 'CREATE_DIFFICALTY_WORDS'
 export const SET_DIFFICALTY_WORDS_ID = 'SET_DIFFICALTY_WORDS_ID,'
 export const SET_AGREGATE_WORDS = 'SET_AGREGATE_WORDS,'
+export const WORD_PLAYING = 'WORD_PLAYING'
 
+export type DifficaltyWords = {
+    id: string,
+    difficulty: string,
+    wordId: string
+  }
 export type WordsType=  {
     id: string,
     group: 0,
@@ -26,7 +32,8 @@ export type WordsType=  {
     transcription: string,
     wordTranslate: string,
     textMeaningTranslate: string,
-    textExampleTranslate: string
+    textExampleTranslate: string,
+
 }
  export type InitialStateWordsType = {
      words : Array<WordsType>
@@ -34,8 +41,9 @@ export type WordsType=  {
      page: number 
      isLoading: boolean
      error: string
-     difficaltWordsId: any[]
-     agregateWords: any []
+     difficaltWordsId: Array<string>
+     agregateWords: Array<WordsType>,
+     wordPlaying: string | null
  }
 //@ts-ignore
  const group: number = +JSON.parse(localStorage.getItem('group'))
@@ -49,10 +57,11 @@ const initialState: InitialStateWordsType = {
     isLoading: false,
     error: '',
     difficaltWordsId: [],
-    agregateWords: []
+    agregateWords: [],
+    wordPlaying: null
 }
 
-type ActionType = 
+export type ActionType = 
 | ReturnType<typeof loadingAC>
 | ReturnType<typeof setWordsAC>
 | ReturnType<typeof setGroupsAC >
@@ -62,6 +71,8 @@ type ActionType =
 | ReturnType<typeof createDificaltyWordsAC>
 | ReturnType<typeof setDifficultWordsIdAC>
 | ReturnType<typeof setagregateWordsAC>
+| ReturnType<typeof setWordPlayingAC>
+
  
 
 
@@ -90,6 +101,9 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         }
         case SET_AGREGATE_WORDS: {
             return {...state, agregateWords: action.data }
+        }
+        case WORD_PLAYING:{
+            return {...state, wordPlaying: action.wordsId}
         }    
        default: {
            return state
@@ -129,7 +143,7 @@ const createDificaltyWordsAC = (word: any)=>{
         word
     } as const
 }
-const setDifficultWordsIdAC = (data: any)=>{
+const setDifficultWordsIdAC = (data: Array<string>)=>{
     return{
         type: SET_DIFFICALTY_WORDS_ID,
         data
@@ -142,6 +156,13 @@ const setagregateWordsAC = (data: Array<WordsType>)=>{
         data
     } as const
 }
+
+export const setWordPlayingAC = (wordsId: string| null) => {
+    return {
+      type: WORD_PLAYING,
+       wordsId
+    } as const
+  }
 
 export const setWords = (group: number, page: number) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
     const {group, page} = getState().words
@@ -177,13 +198,13 @@ export const setDifficultWordsId = () => (dispatch: Dispatch<ActionType>, getSta
     const difficaltyWordsId = getState().words.difficaltWordsId
     api.get(`/users/${userId}/words`)
     .then(res=>{      
-         let resalt = res.data.map((i:any)=>i.wordId)    
+         let resalt = res.data.map((i:DifficaltyWords)=>i.wordId)    
         dispatch(setDifficultWordsIdAC(resalt))   
     })
     .catch(err=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
     })
-    const arr = words.filter((item: any) => difficaltyWordsId.indexOf(item.id) !== -1); 
+    const arr = words.filter((item: WordsType) => difficaltyWordsId.indexOf(item.id) !== -1); 
     dispatch(setagregateWordsAC(arr))
 }
 

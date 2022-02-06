@@ -15,7 +15,6 @@ import { useEffect } from "react";
 
 const VocabularyPage = ()=>{
   const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
-  const words = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.words.words)
   const agregateWords = useSelector<ReducerAppType, Array<any>>((state)=>state.words.agregateWords)
   const dispatch = useDispatch()
   useEffect(()=>{

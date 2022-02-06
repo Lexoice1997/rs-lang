@@ -5,27 +5,27 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import FolderIcon from '@material-ui/icons/Folder';
 import Typography from "@material-ui/core/Typography";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerAppType } from "../../redux/store";
 import { createDifficaltWords, setGroupsAC, setPageAC, setWords, WordsType } from "../../redux/wordsReducer";
 import { SECTIONS_EBOOK } from "../common/groopConstants";
 import styles from './boocPage.module.scss'
-import { idText } from "typescript";
 import { setIsLoginAC } from "../../redux/userReducer";
+import AudioWordContainer from "../aydioWords/aydioWordsContainer";
 
 const BookPage = ()=>{
 
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
     const dispatch = useDispatch();
-    const pages = [...Array(30)].map((e,i)=> i+1)
-
+    const pages = [...Array(30)].map((e,i)=> i+0)
     const [games, setGames] = useState([{name: 'Спринт', url: '/sprint'}, {name: 'Аудиовызов', url: '/audiocoll'}])
     const words = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.words.words)
     const page = useSelector<ReducerAppType, number>((state)=>state.words.page)
     const group = useSelector<ReducerAppType, number>((state)=>state.words.group)
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
-
+    const wordPlaying = useSelector<ReducerAppType, string|null>((state)=>state.words.wordPlaying)
+    const audio = useRef(new Audio());
 
     useEffect(() => { 
         dispatch(setWords(group, page))
@@ -51,8 +51,26 @@ const BookPage = ()=>{
     valuePage = e.target.value
     localStorage.setItem('page', JSON.stringify(valuePage))
     dispatch(setPageAC(e.target.value))
-}
+  }
 
+  const onHandlerNextPage = ()=>{
+    if(page===29) return 
+    let valuePage: number = Number(localStorage.getItem('page'))
+    valuePage = page+1
+    localStorage.setItem('page', JSON.stringify(page+1))
+   dispatch(setPageAC(page+1))
+   
+  }
+
+  const onHandlerPrevPage = ()=>{
+    if(page===0) return
+    
+    let valuePage: number = Number(localStorage.getItem('page'))
+    valuePage = page-1
+    localStorage.setItem('page', JSON.stringify(page-1))
+    dispatch(setPageAC(page-1))
+    
+  }
     const onHandlerCreateDifficaltWord =(word: WordsType, difficalt: string)=>{
        
         dispatch(createDifficaltWords(word, difficalt))
@@ -62,10 +80,12 @@ const BookPage = ()=>{
             <h2>Учебник</h2>
             <div>
                  <select value={group} onChange={onHandlerGroup}>{SECTIONS_EBOOK.map(g=>{
-                     return <option value={g.group}>{g.name}</option>})}</select>
-                 <><button>назад</button> 
-                 <select value = {page} onChange={onHandlerPage}>{pages.map((p, i)=>{return <option  key={i} value={p}>{p}</option>})}</select> 
-                 <button>вперед</button> </>
+                     return <option key={g.group} value={g.group}>{g.name}</option>})}</select>
+                 <>
+                 <button  onClick={onHandlerPrevPage }>prev</button> 
+                 <select value = {page} onChange={onHandlerPage}>{pages.map((p, i)=>{return <option  key={i} value={p}>{p+1}</option>})}</select> 
+                 <button onClick={onHandlerNextPage}>next</button>
+                 </>
                 <select>{games.map((g, i)=>{return <option key={i} value={g.url}>{g.name}</option>})}</select>
              </div>
         <Grid container>
@@ -87,7 +107,7 @@ const BookPage = ()=>{
                             <FolderIcon  style={{ color: `${SECTIONS_EBOOK[word.group].backgroundBtn}`}} />
                           </Tooltip>
                           {word.word} - {word.transcription}
-                          {/* <WordsAudio  audio={audio} word={word} /> */}
+                          <AudioWordContainer  word={word} audio={audio} />
                         </Typography>
                         <Typography variant="subtitle1" color="textSecondary">
                           {word.wordTranslate}
