@@ -3,16 +3,19 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
-import FolderIcon from '@material-ui/icons/Folder';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
 import Typography from "@material-ui/core/Typography";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerAppType } from "../../redux/store";
-import { createDifficaltWords, setGroupsAC, setPageAC, setWords, WordsType } from "../../redux/wordsReducer";
-import { SECTIONS_EBOOK } from "../common/groopConstants";
+import {createDifficaltWords, createLernedWords, deleteDifficaltyWordsId, setAgregateWords, setGroupsAC, setPageAC, setWords, updateWords, WordsType } from "../../redux/wordsReducer";
+import { SECTIONS_WORDS } from "../common/groopConstants";
 import styles from './boocPage.module.scss'
 import { setIsLoginAC } from "../../redux/userReducer";
 import AudioWordContainer from "../aydioWords/aydioWordsContainer";
+import { useHistory } from "react-router-dom";
+import { SECTIONS_GAME } from "../common/gameConst";
+
 
 const BookPage = ()=>{
 
@@ -24,11 +27,33 @@ const BookPage = ()=>{
     const page = useSelector<ReducerAppType, number>((state)=>state.words.page)
     const group = useSelector<ReducerAppType, number>((state)=>state.words.group)
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
-    const wordPlaying = useSelector<ReducerAppType, string|null>((state)=>state.words.wordPlaying)
     const audio = useRef(new Audio());
+    // const agregateWords = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.words.agregateWords);
+    const history = useHistory()
+    const pathName = history.location.pathname
+    
+    let filter = {}
 
+    if(isLogin && pathName ==='/textBook'){  
+      filter = {}   
+    }
+    if(isLogin && pathName ==='/vocabulary'){  
+      filter={"$or":[{"userWord.difficulty":"hard"}]}  
+    }
+    
     useEffect(() => { 
+       if(pathName ==='/textBook'){
+        
+        dispatch(setAgregateWords( group, page, filter))
+        
+      } if(pathName ==='/vocabulary'){
+        
+        filter={"$or":[{"userWord.difficulty":"hard"}]}
+        dispatch(setAgregateWords( group, page, filter)) 
+      } 
+        
         dispatch(setWords(group, page))
+
     }, [group, page])
 
     useEffect(() => {
@@ -57,7 +82,7 @@ const BookPage = ()=>{
     if(page===29) return 
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = page+1
-    localStorage.setItem('page', JSON.stringify(page+1))
+    localStorage.setItem('page', JSON.stringify(valuePage))
    dispatch(setPageAC(page+1))
    
   }
@@ -67,33 +92,53 @@ const BookPage = ()=>{
     
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = page-1
-    localStorage.setItem('page', JSON.stringify(page-1))
+    localStorage.setItem('page', JSON.stringify(valuePage))
     dispatch(setPageAC(page-1))
     
   }
     const onHandlerCreateDifficaltWord =(word: WordsType, difficalt: string)=>{
-       
-        dispatch(createDifficaltWords(word, difficalt))
+      dispatch(createDifficaltWords(word, difficalt))
     }
+
+  const onCreateLearnedWords = (word: any, optional: {})=>{
+      dispatch(createLernedWords(word, optional))
+  }
+
+  const onHandlerDeleteDifficaltWord =(word: WordsType, difficulty: string | undefined, optional: {}| undefined)=>{
+    dispatch(updateWords(word, difficulty, optional))
+    dispatch(deleteDifficaltyWordsId(word))  
+  }
+
+  const onHandlerFromDifficaltyToLearned=(word: WordsType, difficulty:string, optional: {})=>{
+    
+    dispatch(updateWords(word, difficulty, optional))
+    dispatch(createLernedWords(word, optional))
+    dispatch(deleteDifficaltyWordsId(word))   
+  }
+  
+  const onHandlerGame =(e: any)=>{
+   history.push(e.target.value)  
+  }
     return (
         <div>
-            <h2>Учебник</h2>
+            {pathName==='/vocabulary' ? <h2>Сложные слова</h2> : <h2>Учебник</h2>}
             <div>
-                 <select value={group} onChange={onHandlerGroup}>{SECTIONS_EBOOK.map(g=>{
+                 <select value={group} onChange={onHandlerGroup}>{SECTIONS_WORDS.map(g=>{
                      return <option key={g.group} value={g.group}>{g.name}</option>})}</select>
                  <>
                  <button  onClick={onHandlerPrevPage }>prev</button> 
                  <select value = {page} onChange={onHandlerPage}>{pages.map((p, i)=>{return <option  key={i} value={p}>{p+1}</option>})}</select> 
                  <button onClick={onHandlerNextPage}>next</button>
                  </>
-                <select>{games.map((g, i)=>{return <option key={i} value={g.url}>{g.name}</option>})}</select>
+                <select onChange={onHandlerGame} >{SECTIONS_GAME.map((g, i)=>{return <option key={g.id} value={g.url}>{g.name}</option>})}</select>
              </div>
         <Grid container>
-          {
+          {!isLogin && pathName==='/vocabulary' ? <>Необходиомо авторизоваться</> 
+          : 
             words.length === 0
               ? <Typography component="h5" variant="h5">Не найдено слов</Typography>
               : words.map(word => (
-                <Grid key={word.id} item xs={12} sm={12} md={12}>
+                <Grid key={word._id} item xs={12} sm={12} md={12}>
                   <Card  variant="outlined">
                     <CardMedia
                       className={styles.cardPicture}
@@ -102,9 +147,9 @@ const BookPage = ()=>{
   
                     <div>
                       <CardContent >
-                        <Typography component="h5" variant="h5">
-                          <Tooltip title={`${SECTIONS_EBOOK[word.group].name}`}>
-                            <FolderIcon  style={{ color: `${SECTIONS_EBOOK[word.group].backgroundBtn}`}} />
+                        <Typography component="h5" variant="h5" className={styles.cardTitle}>
+                          <Tooltip title={`${SECTIONS_WORDS[word.group].name}`}>
+                            <BookmarkIcon className={styles.cardSubtitle} fontSize="large" style={{ color: `${SECTIONS_WORDS[word.group].backgroundBtn}`}} />
                           </Tooltip>
                           {word.word} - {word.transcription}
                           <AudioWordContainer  word={word} audio={audio} />
@@ -125,18 +170,28 @@ const BookPage = ()=>{
                           {word.textExampleTranslate}
                         </Typography>
                       </CardContent>
-                    </div>
-                    {isLogin ? <><button onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard')}}>сложное слово</button>
-                        <button>изученное</button>
-                    
-                    </> : ''}
+                    </div> 
+                    {
+                    (isLogin && pathName ==='/textBook')
+                    ? <><button className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard')}}>сложные слова</button>
+                        <button className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onCreateLearnedWords(word, {learned: true})}}>изученные слова</button>
+                        <span>отгадано {0}</span>
+                        <span>неотгадано {0}</span>
+                      </> 
+                    : (isLogin && pathName ==='/vocabulary' ) 
+                    ? <><button onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</button>
+                        <button onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}>в изученные слова</button>
+                        <span>отгадано {0}</span>
+                        <span>неотгадано {0}</span>
+                      </>
+                      
+                    : ''
+                    }
                   </Card>
                 </Grid>
               ))
-            
-
           }
-        </Grid>
+       </Grid>
       </div>
     );
    

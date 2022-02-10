@@ -5,8 +5,8 @@ import RegistrationPage from "./regestration/regestration";
 import StartPage from "./startPage/startPage";
 import StatistiksPage from "./statistiks/statistiks";
 import TextBookPage from "./bookPage/book";
-import VocabularyPage from "./vocabulary/vocabulary";
 import AboutPage from "./about/about";
+import AudioColl from "./games/audioColl";
 export const SPRINT_GAME = '/sprint';
 export const AUDIO_COLL_GAME = '/audiocoll';
 export const LOGIN_PATH = '/login';
@@ -26,10 +26,11 @@ const Routes = () => {
       <Route path={LOGIN_PATH} render={() => <LoginPage/>}/>
       <Route path={REGISTRATION_PATH} render={() => <RegistrationPage/>}/>
       <Route path={TEXTBOOK_PAGE} render={() => <TextBookPage/>}/>
-      <Route path={VOCABULARY_PAGE} render={() => <VocabularyPage/>}/>
+      <Route path={VOCABULARY_PAGE} render={() => <TextBookPage/>}/>
       <Route path={GAMES_PAGE} render={() => <GamesPage/>}/>
       <Route path={STATISTIKS_PAGE} render={() => <StatistiksPage/>}/>
       <Route path={ABOUT_PAGE} render={() => <AboutPage/>}/>
+      <Route path={AUDIO_COLL_GAME} render={() => <AudioColl/>}/>
     </div>
   )
 }

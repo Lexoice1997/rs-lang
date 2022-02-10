@@ -8,7 +8,7 @@ type PropsType = {
     wordPlaying: string | null
     setWordPlayingAC: (wordId: string | null)=>void
     audio: any
-    word: WordsType
+    word: WordsType 
 }
 
 

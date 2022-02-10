@@ -1,5 +1,6 @@
 import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import styles from '../bookPage/boocPage.module.scss'
 
 import { WordsType } from '../../redux/wordsReducer';
 
@@ -14,7 +15,8 @@ function AdioWord ({wordPlaying, word, audio, setWordPlaying }: PropsType) {
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com';
     
     const playAudio = (audio: any, word: WordsType) => {
-      setWordPlaying(word.id);
+      const id = word._id ?? word.id 
+      setWordPlaying(id as string) ;
       const audioList = [
         `${baseUrl}/${word.audio}`,
         `${baseUrl}/${word.audioMeaning}`,
@@ -41,10 +43,9 @@ function AdioWord ({wordPlaying, word, audio, setWordPlaying }: PropsType) {
       setWordPlaying(null);
     }
   
-    if (wordPlaying !== word.id) {
-      return <PlayCircleOutlineIcon color="primary"  onClick={() => playAudio(audio, word)} />;
-    }
-    return <PauseCircleOutlineIcon color="primary" onClick={() => pauseAudio(audio)} />;
+    if (wordPlaying !== word._id ?? word.id) {
+      return <PlayCircleOutlineIcon className={styles.audioIcon} color="action" fontSize="large" onClick={() => playAudio(audio, word)} />;
+    } return <PauseCircleOutlineIcon className={styles.audioIcon} color="action" fontSize="large"  onClick={() => pauseAudio(audio)} />;
   }
   
   export default AdioWord;
