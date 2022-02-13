@@ -1,4 +1,3 @@
-
 import { Dispatch } from "react";
 import api from "../api/api";
 import { ReducerAppType, RootState } from "./store";
@@ -30,8 +29,8 @@ export type WordsType=  {
 }
  export type InitialStateWordsType = {
      words : Array<WordsType>
-     group: number 
-     page: number 
+     group: number
+     page: number
      isLoading: boolean
      error: string
      difficaltWordsId: any[]
@@ -52,7 +51,7 @@ const initialState: InitialStateWordsType = {
     agregateWords: []
 }
 
-type ActionType = 
+type ActionType =
 | ReturnType<typeof loadingAC>
 | ReturnType<typeof setWordsAC>
 | ReturnType<typeof setGroupsAC >
@@ -62,7 +61,7 @@ type ActionType =
 | ReturnType<typeof createDificaltyWordsAC>
 | ReturnType<typeof setDifficultWordsIdAC>
 | ReturnType<typeof setagregateWordsAC>
- 
+
 
 
 const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsType=>{
@@ -79,9 +78,9 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         case SET_LOADER:{
             return {...state, isLoading: action.isLoading}
         }
-        case SET_ERROR_WORDS:{ 
+        case SET_ERROR_WORDS:{
             return{...state, error: action.error}
-        } 
+        }
         case CREATE_DIFFICALTY_WORDS:{
             return {...state, difficaltWordsId: [...state.difficaltWordsId, action.word]}
         }
@@ -90,7 +89,7 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         }
         case SET_AGREGATE_WORDS: {
             return {...state, agregateWords: action.data }
-        }    
+        }
        default: {
            return state
        }
@@ -102,14 +101,14 @@ const setWordsAC =(data: Array<WordsType>)=>{
         type: SET_WORDS,
         data
     } as const
-} 
+}
 
 export const setGroupsAC =(group: number)=>{
     return{
         type: SET_GROUP,
         group
     } as const
-} 
+}
 export const setPageAC =(page: number)=>{
     return{
         type: SET_PAGE,
@@ -163,11 +162,11 @@ export const createDifficaltWords=(word: WordsType, difficalt: string)=>(dispatc
     console.log(userId)
     api.post(`/users/${userId}/words/${word.id}`, {difficulty: difficalt})
      .then(res=>{
-         dispatch(createDificaltyWordsAC(word))    
+         dispatch(createDificaltyWordsAC(word))
      })
      .catch(err=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
-        
+
      })
 }
 
@@ -176,14 +175,14 @@ export const setDifficultWordsId = () => (dispatch: Dispatch<ActionType>, getSta
     const words = getState().words.words
     const difficaltyWordsId = getState().words.difficaltWordsId
     api.get(`/users/${userId}/words`)
-    .then(res=>{      
-         let resalt = res.data.map((i:any)=>i.wordId)    
-        dispatch(setDifficultWordsIdAC(resalt))   
+    .then(res=>{
+         let resalt = res.data.map((i:any)=>i.wordId)
+        dispatch(setDifficultWordsIdAC(resalt))
     })
     .catch(err=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
     })
-    const arr = words.filter((item: any) => difficaltyWordsId.indexOf(item.id) !== -1); 
+    const arr = words.filter((item: any) => difficaltyWordsId.indexOf(item.id) !== -1);
     dispatch(setagregateWordsAC(arr))
 }
 

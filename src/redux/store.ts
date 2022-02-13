@@ -24,5 +24,5 @@ export type ReducerAppType = ReturnType<typeof reducer>
 export default store
 
 // @ts-ignore
-window.store = store
+// window.store = store
 

@@ -3,7 +3,6 @@ import "./header.scss";
 import {NavLink} from "react-router-dom";
 import {LOGIN_PATH, REGISTRATION_PATH} from "../routs";
 import {AppBar, Button, makeStyles, Toolbar, Typography} from "@material-ui/core";
-import React from "react";
 import { useDispatch } from "react-redux";
 import { logaut } from "../../redux/userReducer";
 

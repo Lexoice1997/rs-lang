@@ -7,6 +7,7 @@ import StatistiksPage from "./statistiks/statistiks";
 import TextBookPage from "./bookPage/book";
 import VocabularyPage from "./vocabulary/vocabulary";
 import AboutPage from "./about/about";
+import SprintGame from "./games/sprint-game/sprintGame";
 export const SPRINT_GAME = '/sprint';
 export const AUDIO_COLL_GAME = '/audiocoll';
 export const LOGIN_PATH = '/login';
@@ -30,6 +31,7 @@ const Routes = () => {
       <Route path={GAMES_PAGE} render={() => <GamesPage/>}/>
       <Route path={STATISTIKS_PAGE} render={() => <StatistiksPage/>}/>
       <Route path={ABOUT_PAGE} render={() => <AboutPage/>}/>
+      <Route path={SPRINT_GAME} render={() => <SprintGame />}/>
     </div>
   )
 }
