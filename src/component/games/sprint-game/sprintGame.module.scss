@@ -1,0 +1,243 @@
+.sprintGame {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  background: linear-gradient(#ff8351,#f65e23);
+
+  .sprintCloseBtn {
+    color: white;
+    padding: 0;
+    position: absolute;
+    height: 45px;
+    width: 45px;
+    top: 15px;
+    right: 15px;
+    transition: top .3s,right .3s;
+    cursor: pointer;
+  }
+
+  .sprintVolumeBtn {
+    color: white;
+    padding: 0;
+    height: 45px;
+    width: 45px;
+    margin-top: 15px;
+    margin-left: 15px;
+    transition: top .3s,right .3s;
+    cursor: pointer;
+  }
+
+  .sprintGameBody {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 50px;
+
+    .head {
+      width: 600px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #323232;
+      height: 70px;
+      padding: 10px;
+      font-size: 45px;
+      text-align: center;
+      line-height: 40px;
+
+      .time {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 70px;
+        border: 2px solid #e7b78f;
+        height: 70px;
+        padding: 10px;
+        font-size: 45px;
+        text-align: center;
+        line-height: 40px;
+        border-radius: 50%;
+      }
+
+      .counter {
+        width: 70px;
+      }
+    }
+
+    .body {
+      height: 450px;
+      width: 600px;
+      padding: 10px;
+      border-radius: 40px;
+      background-color: rgba(80, 80, 80, .65);
+      color: white;
+      
+
+      .winstrike {
+        font-size: 40px;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .dots {
+        
+        ul {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 50%;
+          list-style: none;
+          margin: 0 auto;
+          padding: 0;
+          margin-top: 20px;
+
+          li {
+            width: 18px;
+            height: 18px;
+            background-color: aliceblue;
+            border-radius: 50%;
+          }
+
+          .activeLi {
+            background-color: #4cca78;
+          }
+        }
+      }
+
+      .words {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 15%;
+
+        .original {
+          font-size: 40px;
+          font-weight: bold;
+          line-height: 22px;
+          margin-bottom: 20px;
+        }
+
+        .translate {
+          font-size: 30px;
+          margin-top: 9px;
+          line-height: 22px;
+        }
+      }
+
+      .buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 auto;
+        width: 70%;
+        margin-top: 10%;
+
+        button {
+          color: #ffffff;
+          width: 150px;
+          border: none;
+          cursor: pointer;
+          height: 40px;
+          display: flex;
+          outline: none;
+          font-size: 16px;
+          margin-top: 20px;
+          transition: all .8s ease;
+          align-items: center;
+          font-weight: 700;
+          border-radius: 5px;
+          justify-content: center;
+          background-color: #00a098;
+        }
+
+        button:last-child {
+          background-color: #4cca78;
+        }
+      }
+    }
+  }
+}
+
+.root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 100vh;
+}
+
+.sprintResult {
+  width: 600px;
+  max-height: 60vh;
+  margin: auto;
+  background: hsla(0,0%,100%,.3);
+  padding: 30px 20px;
+  box-sizing: border-box;
+  border-radius: 40px;
+  color: rgb(55, 81, 106);
+
+  .resultHead {
+    text-align: center;
+
+    h3 {
+      font-size: 3rem;
+      margin: 0;
+    }
+
+    p {
+      font-size: 2rem;
+      margin: 10px 0;
+    }
+  }
+
+  .resultBody {
+    overflow-y: scroll;
+    max-height: 40vh;
+
+    h5 {
+      font-size: 1.5rem;
+      margin: 15px 0;
+    }
+
+    span {
+      border-radius: 16px;
+      padding: 2px 15px;
+      background: rgb(17, 169, 17);
+    }
+
+    .correct {
+      color: rgb(255, 255, 255);
+    }
+
+    .incorrect {
+      background: rgb(241, 52, 52);
+    }
+
+    .answers {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+      align-items: center;
+
+      h6 {
+        font-size: 1rem;
+        margin: 5px;
+      }
+    }
+  }
+}
+
+.navbar {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    margin-bottom: 15px;
+    margin-right: 20px;
+  }
+}

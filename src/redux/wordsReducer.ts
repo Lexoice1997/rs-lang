@@ -53,8 +53,8 @@ export type WordsType=  {
 }
  export type InitialStateWordsType = {
      words : Array<WordsType>
-     group: number 
-     page: number 
+     group: number
+     page: number
      isLoading: boolean
      error: string
      wordPlaying: string | null,
@@ -74,7 +74,6 @@ const initialState: InitialStateWordsType = {
     wordPlaying: null,
     //agregateWords: []
 }
-
 export type ActionType = 
 | ReturnType<typeof loadingAC>
 | ReturnType<typeof setWordsAC>
@@ -82,14 +81,14 @@ export type ActionType =
 | ReturnType<typeof setPageAC>
 | ReturnType<typeof setErrorWordsAC >
 | ReturnType<typeof createDificaltyWordsAC>
+| ReturnType<typeof setDifficultWordsIdAC>
+| ReturnType<typeof setagregateWordsAC>
 | ReturnType<typeof deleteDifficaltyWordsAC>
 | ReturnType<typeof setAgregatedWordsAC>
 | ReturnType<typeof setWordPlayingAC>
 | ReturnType<typeof createLearnedWordAC>
 | ReturnType<typeof deleteLearnedWordAC>  
 | ReturnType<typeof updateWordsAC> 
-
-
 
 const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsType=>{
     
@@ -106,9 +105,9 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         case SET_LOADER:{
             return {...state, isLoading: action.isLoading}
         }
-        case SET_ERROR_WORDS:{ 
+        case SET_ERROR_WORDS:{
             return{...state, error: action.error}
-        } 
+        }
         case CREATE_DIFFICALTY_WORDS:{
            //@ts-ignore
             return {...state, words: state.words.map(el=>{
@@ -134,6 +133,9 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         }
         case DELETE_LEARNED_WORDS:{
             return {...state, words: state.words.filter(el=>(el._id??el.id)!==action.word._id)}
+        }
+        case SET_AGREGATE_WORDS: {
+            return {...state, agregateWords: action.data }
         }
         case SET_DIFFICALTY_WORDS: {
             return {...state, words: action.data }
@@ -161,14 +163,14 @@ const setWordsAC =(data: Array<WordsType>)=>{
         type: SET_WORDS,
         data
     } as const
-} 
+}
 
 export const setGroupsAC =(group: number)=>{
     return{
         type: SET_GROUP,
         group
     } as const
-} 
+}
 export const setPageAC =(page: number)=>{
     return{
         type: SET_PAGE,
@@ -286,7 +288,7 @@ export const createDifficaltWords=(word: WordsType, difficulty: string)=>(dispat
      })
      .catch(err=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
-        
+
      })
 }
 export const setAgregateWords = (group: number, page: number, filter: any) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
