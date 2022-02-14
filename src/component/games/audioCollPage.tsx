@@ -7,7 +7,6 @@ import { ReducerAppType } from "../../redux/store";
 import { WordsType } from "../../redux/wordsReducer";
 import { SECTIONS_WORDS } from "../common/groopConstants";
 import Game from "./game";
-import AudioColl from "./game";
 import GameStatistics from "./gameStatistics";
 export type StatistiksType = {
     words: Array<WordsType> 
@@ -26,7 +25,6 @@ const AudioCallPage = () => {
         dispatch(setWordsGame(group, page))
     }
 
-    console.log(words)
    useEffect(()=>{
     return()=>{
         dispatch(setWordsGameAC([]))

@@ -228,7 +228,7 @@ export const setWordPlayingAC = (wordId: string| null) => {
     } as const
   }
 
-  export const updateWordsAC = (word: WordsType, difficulty: string| undefined, optional:{}| undefined)=>{
+  export const updateWordsAC = (word: WordsType, difficulty: string| undefined | null, optional:{}| undefined)=>{
     return{
         type: APDATE_WORDS,
         word,
@@ -237,13 +237,13 @@ export const setWordPlayingAC = (wordId: string| null) => {
     } as const
   }
 
-export const updateWords = (word: WordsType, difficulty: string | undefined, optional: {} | undefined)=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType): void=>{
+export const updateWords = (word: WordsType, difficulty: string | undefined | null, optional: {} | undefined)=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType): void=>{
     const userId=getState().user.user.userId
-    let status: string | undefined
+    let status: string | undefined | null
     status = difficulty
     let param: {} | undefined
     param = optional
-    if(!difficulty){
+    if(difficulty===null || difficulty === undefined){
         status = word.userWord?.difficulty
     }else status = difficulty
     if(!optional){
@@ -274,6 +274,8 @@ export const setWords = (group: number, page: number) => (dispatch: Dispatch<Act
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
     })
 }
+
+
 
 export const createDifficaltWords=(word: WordsType, difficulty: string)=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void=>{
     

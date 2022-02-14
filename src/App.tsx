@@ -4,10 +4,9 @@ import "./App.css";
 import {Grid} from "@material-ui/core";
 import Routes from "./component/routs";
 import Footer from "./component/footer/footer";
-import { userInfo } from 'os';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { HashRouter, useLocation} from 'react-router-dom';
+import { HashRouter, useHistory} from 'react-router-dom';
 import { getUserId } from './api/api';
 import Header from './component/header/header';
 import NavBar from './component/navBar/navBar';
@@ -16,7 +15,7 @@ import { checkAuthUser } from './redux/userReducer';
 
 const App=() => {
   const dispatch = useDispatch(); 
- 
+  const histiry = useHistory()
   useEffect(() => {
     const userId = getUserId()
     if (userId) {

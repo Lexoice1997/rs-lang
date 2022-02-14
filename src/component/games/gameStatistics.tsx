@@ -10,11 +10,10 @@ import { useHistory } from "react-router-dom";
 import { setWordsGameAC } from "../../redux/gameReducer";
 
 
-const GameStatistics = ({ statistics, onFinish, setWords }:any) => {
-    const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
-  
+const GameStatistics = ({ statistics, onFinish}:any) => {
+    console.log(statistics)
+    const baseUrl = 'https://rs-lang-scorpion.herokuapp.com' 
     const history = useHistory()
-
     const audio = useRef();
 
     const onAudioPlay = useCallback((audioPath) => {
@@ -29,6 +28,7 @@ const GameStatistics = ({ statistics, onFinish, setWords }:any) => {
     const dispatch = useDispatch();
     const correctWords = statistics.current.words.filter((word:any) => word.correct);
     const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
+    
    const setNewGame =()=>{
     dispatch(setWordsGameAC([]))
     onFinish(false)

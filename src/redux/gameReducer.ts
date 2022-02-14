@@ -53,43 +53,42 @@ export const setWordsGame = (group: number = 0, page: number = 0)=>(dispatch: Di
     
 }
 
-export const setWordsUser= (group: number, page: number, filter: any) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
-   
+export const setWordsUser= (group: number, page: number, filter: any,) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
     const userId=getState().user.user.userId
     const wordsPerPage: number = 20
     const arr: Array<WordsType> = []
 
-    if(page===0){
-        api.get(`/users/${userId}/aggregatedWords`, {params: {
-            group, page, wordsPerPage, filter
-        }}).then((res)=>{
-            dispatch(setWordsUserAC(res.data[0].paginatedResults))
-        }).catch(err=>{
-            dispatch(setErrorGamesAC (err.response ? err.response.data : err.message))
-        })
-    } while(arr.length!==20 && page ){
+//     if(page===0){
+//         api.get(`/users/${userId}/aggregatedWords`, {params: {
+//              wordsPerPage, filter
+//         }}).then((res)=>{
+//             dispatch(setWordsUserAC(res.data[0].paginatedResults))
+//         }).catch(err=>{
+//             dispatch(setErrorGamesAC (err.response ? err.response.data : err.message))
+//         })
+//     } while(arr.length!==20 && page ){
+//     api.get(`/users/${userId}/aggregatedWords`, {params: {
+//         wordsPerPage, filter
+//     }}).then((res)=>{
+//         arr.push(...res.data[0].paginatedResults)
+//     }).catch(err=>{
+//         dispatch(setErrorGamesAC (err.response ? err.response.data : err.message))
+//     })
+//     page--
+//     dispatch(setWordsUserAC(arr))
+//    }
+ 
+    
     api.get(`/users/${userId}/aggregatedWords`, {params: {
-        group, page, wordsPerPage, filter
-    }}).then((res)=>{
-        arr.push(...res.data[0].paginatedResults)
-    }).catch(err=>{
+         wordsPerPage, filter
+    }})
+    .then(res=>{      
+         dispatch(setWordsUserAC(res.data[0].paginatedResults))
+
+    })
+    .catch(err=>{
         dispatch(setErrorGamesAC (err.response ? err.response.data : err.message))
     })
-    page--
-    dispatch(setWordsUserAC(arr))
-   }
-  
-    
-    // api.get(`/users/${userId}/aggregatedWords`, {params: {
-    //     group, page, wordsPerPage, filter
-    // }})
-    // .then(res=>{      
-    //      dispatch(setWordsUserAC(res.data[0].paginatedResults))
-
-    // })
-    // .catch(err=>{
-    //     dispatch(setErrorGamesAC (err.response ? err.response.data : err.message))
-    // })
    
 }
 const setWordsUserAC = (data: any)=>{
