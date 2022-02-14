@@ -19,7 +19,6 @@ const App=() => {
  
   useEffect(() => {
     const userId = getUserId()
-    console.log(userId)
     if (userId) {
         dispatch(checkAuthUser(userId));
     }

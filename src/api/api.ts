@@ -21,17 +21,19 @@ api.interceptors.response.use(
         
         let id = getUserId()
         const originalRequest = error.config
+        console.log(error.config._isRetry)
         if (error.response.status === 401 && error.config && !error.config._isRetry) {
             originalRequest._isRetry = true
+            
             try {
                 const response = await api.get(`/users/${id}/tokens`)
                 localStorage.setItem("user", JSON.stringify(response.data))
+                axios.defaults.headers.common['Authorization'] = 'Bearer ' + getMeRefreshToken()
                 return api.request(originalRequest)
             } catch (e) {
                 console.log(e)
             }
-        }
-        throw error
+        } throw error
     },
 )
 
@@ -41,6 +43,11 @@ export const getMeToken=()=>{
     return JSON.parse(user).token
 }
 
+export const getMeRefreshToken=()=>{
+    const user = localStorage.getItem("user")
+    if(!user) return
+    return JSON.parse(user).refreshToken
+}
 export const getUserId=()=>{
     const user = localStorage.getItem("user")
     if(!user) return
