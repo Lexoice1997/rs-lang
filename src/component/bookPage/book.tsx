@@ -139,6 +139,7 @@ const BookPage = ()=>{
         "$and": [
           {"$or":[
             {"userWord.optional.learned": false},
+            {"userWord.difficulty":"hard"},
             {"userWord":null}
           ]},
           {"page": page }, {"group":group }
