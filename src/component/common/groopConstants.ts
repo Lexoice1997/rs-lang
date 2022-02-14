@@ -1,9 +1,9 @@
-export const SECTIONS_EBOOK = [
+export const SECTIONS_WORDS = [
     {
       group: 0,
       name: 'Раздел 1',
       background: 'rgba(232, 245, 233, 0.5)',
-      backgroundBtn: 'rgba(165, 214, 167, 1)',
+      backgroundBtn: 'rgba(225, 140, 230, 1)',
     },
     {
       group: 1,

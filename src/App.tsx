@@ -5,7 +5,7 @@ import Routes, { SPRINT_GAME } from "./component/routs";
 import Footer from "./component/footer/footer";
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { HashRouter, withRouter} from 'react-router-dom';
+import { HashRouter, withRouter, useHistory} from 'react-router-dom';
 import { getUserId } from './api/api';
 import Header from './component/header/header';
 import NavBar from './component/navBar/navBar';
@@ -17,11 +17,11 @@ import { Route } from 'react-router-dom';
 import SprintGame from './component/games/sprint-game/sprintGame';
 
 const App=(props: any) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); 
+  const histiry = useHistory()
 
   useEffect(() => {
     const userId = getUserId()
-    console.log(userId)
     if (userId) {
         dispatch(checkAuthUser(userId));
     }

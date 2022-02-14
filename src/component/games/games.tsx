@@ -1,8 +1,11 @@
+
 import styles from "./games.module.scss";
 import {Link, NavLink} from "react-router-dom";
 import {SPRINT_GAME} from "../routs";
-
+import { useHistory } from "react-router-dom";
+import "./games.scss";
 const GamesPage = () => {
+  const history = useHistory()
   return (
     <div className={styles.games}>
       <div className={`${styles.game} ${styles.gameFirst}`}>
@@ -43,11 +46,17 @@ const GamesPage = () => {
       </div>
      
 
+
       <div className={`${styles.game} ${styles.gameSecond}`}>
         <div className={`${styles.imgAudio} ${styles.img}`}></div>
         <div className={styles.head}>
         <div className={styles.name}>Аудиовызов</div>
           <div className={styles.title}>
+      <div className="game game-2" onClick={()=>history.push('/audioCallPage')}>
+        <div className="game__img game__img-audio"></div>
+        <div className="game__head">
+        <div className="game__name">Аудиовызов</div>
+          <div className="game__title">
             Тренировка Аудиовызов улучшает восприятие речи на слух.
           </div>
         </div>

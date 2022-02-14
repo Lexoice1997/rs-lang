@@ -8,14 +8,11 @@ import store from './redux/store';
 import { HashRouter, withRouter} from 'react-router-dom';
 
 ReactDOM.render(
-  <React.StrictMode>
     <HashRouter>
     <Provider store={store}>
         <App />
     </Provider>
     </HashRouter>
-    
-  </React.StrictMode>,
   document.getElementById('root')
 );
 
