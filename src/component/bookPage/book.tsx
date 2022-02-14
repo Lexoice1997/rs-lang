@@ -34,7 +34,7 @@ const BookPage = ()=>{
     let filter = {}
 
     if(isLogin && pathName ==='/textBook'){  
-      filter={"$and":[{"group": +group, "page": +page}]}  
+      filter={"$and": [{ "page": page }, {"group":group }]}  
     }
     if(isLogin && pathName ==='/vocabulary'){  
       filter={"$or":[{"userWord.difficulty":"hard"}]}  
@@ -44,7 +44,6 @@ const BookPage = ()=>{
       if(!isLogin && pathName ==='/textBook'){
         dispatch(setWords(group, page))
       } else if(pathName ==='/textBook' && isLogin){
-       
         dispatch(setAgregateWords(group, page, filter))
       } else if(pathName ==='/vocabulary' && isLogin){
         dispatch(setAgregateWords( group, page, filter)) 

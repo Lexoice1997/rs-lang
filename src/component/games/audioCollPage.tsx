@@ -19,7 +19,7 @@ const AudioCallPage = () => {
     const history = useHistory();
     const statistics = useRef({ words: [], counter: 0});
     const dispatch = useDispatch();
-    const [group, setGroup] = useState(0)
+    const [group, setGroup] = useState<number>(0)
     const words = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.game.wordsList)
     
     const onStartHandler = (group:number, page:number)=>{

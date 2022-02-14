@@ -191,6 +191,7 @@ const createDificaltyWordsAC = (word: WordsType, difficulty: string)=>{
 }
 
 const setAgregatedWordsAC = (data: any)=>{
+    
     return{
         type: SET_DIFFICALTY_WORDS,
         data
@@ -292,7 +293,7 @@ export const setAgregateWords = (group: number, page: number, filter: any) => (d
     const wordsPerPage: number = 20
 
     api.get(`/users/${userId}/aggregatedWords`, {params: {
-        group, page, wordsPerPage, filter
+         wordsPerPage, filter
     }})
     .then(res=>{      
          dispatch(setAgregatedWordsAC(res.data[0].paginatedResults))
