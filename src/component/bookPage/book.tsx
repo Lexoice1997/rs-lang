@@ -120,6 +120,7 @@ const BookPage = ()=>{
         "$and": [
           {"$or":[
             {"userWord.optional.learned": false},
+            {"userWord.difficulty":"hard"},
             {"userWord":null}
           ]},
           {"page": page }, {"group":group }
@@ -163,7 +164,7 @@ const BookPage = ()=>{
                  <select value = {page} onChange={onHandlerPage}>{pages.map((p, i)=>{return <option  key={i} value={p}>{p+1}</option>})}</select> 
                  <button onClick={onHandlerNextPage}>next</button>
                  </>
-                <select onChange={onHandlerGame}>{SECTIONS_GAME.map((g, i)=>{return <option key={g.id} value={g.url}>{g.name}</option>})}</select>
+                <select onChange={onHandlerGame}>{SECTIONS_GAME.map((g, i)=>{return <option key={g.name} value={g.url}>{g.name}</option>})}</select>
              </div>
         <Grid container>
           {!isLogin && pathName==='/vocabulary' ? <>Необходиомо авторизоваться</> 

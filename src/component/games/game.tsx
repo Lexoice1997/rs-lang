@@ -7,8 +7,9 @@ import { Box, Button, IconButton, Zoom } from '@material-ui/core';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
-import { WordsType } from '../../redux/wordsReducer';
+import { createLernedWords, deleteDifficaltyWordsId, updateWords, WordsType } from '../../redux/wordsReducer';
 import { StatistiksType } from './audioCollPage';
+import { useDispatch } from 'react-redux';
 
 const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
 
@@ -29,7 +30,7 @@ const Game = ({ words, statistics, onFinish}:any) => {
   const [skip, setSkip] = useState<boolean>(false);
   const [sound, setSound] = useState<boolean>(true);
 
- 
+  const dispatch = useDispatch()
   const currentWord: WordsType = words[current]; //1 элемент из массива
   const currentAudio = new Audio(`${baseUrl}/${words[current].audio}`);
 
@@ -48,25 +49,33 @@ const Game = ({ words, statistics, onFinish}:any) => {
   };
 
   const onHandlerAnswer = useCallback(
+    
     (answerWord, skip = false) => {
       if (answer) return;
-      const isAnswerCorrect = currentWord.id === answerWord.id && !skip;
+      const isAnswerCorrect = (currentWord.id ?? currentWord._id ) === (answerWord.id ?? answerWord._id)&& !skip;
       if (isAnswerCorrect) {
         sound && new Audio(correct).play();
         statistics.current.counter+=1
-        statistics.current.words.push({ ...currentWord, correct: true });
+        statistics.current.words.push({ ...currentWord, correct: true});
+        // if(currentWord.userWord?.difficulty){
+        //   dispatch(updateWords(currentWord, null, {learned: true} ))
+        //   dispatch(deleteDifficaltyWordsId(currentWord))
+        // }else {dispatch(createLernedWords(currentWord, {learned: true}))}
       } else {
         statistics.current.counter=0
         sound && new Audio(error).play();
         statistics.current.words.push({ ...currentWord, correct: false });
+        // if(currentWord.userWord?.difficulty){
+        //   dispatch(updateWords(currentWord, null, {learned: false} ))
+        //   dispatch(deleteDifficaltyWordsId(currentWord))
+        // }else {dispatch(createLernedWords(currentWord, {learned: false}))}
       }
       setAnswer(answerWord);
       setSkip(skip);
+
     },
     [current, answer]
   );
-
-
 
   useEffect(() => {
     let answers = words.filter((w: any, idx: number) => idx !== current);
@@ -167,7 +176,6 @@ const Game = ({ words, statistics, onFinish}:any) => {
         </Box>
         {!answer && <Button variant="outlined" onClick={() => onHandlerAnswer(currentWord, true)}>не знаю</Button>}
         {answer && <Button variant="outlined"  onClick={() => onHandlerNext()}><ArrowRightAltIcon /></Button>}
-
         <Box onClick={() => setSound(sound => !sound)}></Box>
       </Box>
     </>

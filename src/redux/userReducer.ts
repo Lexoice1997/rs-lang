@@ -135,8 +135,6 @@ export const logaut = ()=>(dispatch: any)=>{
 export const checkAuthUser = (id: string) => (dispatch: Dispatch<ActionType>) => {
     axios.get(`https://rs-lang-scorpion.herokuapp.com/users/${id}/tokens`,)
         .then((res) => {
-            console.log(res);
-            
             localStorage.setItem("user", res.data);
             dispatch(setUserAC( res.data));
             
