@@ -81,8 +81,6 @@ export type ActionType =
 | ReturnType<typeof setPageAC>
 | ReturnType<typeof setErrorWordsAC >
 | ReturnType<typeof createDificaltyWordsAC>
-| ReturnType<typeof setDifficultWordsIdAC>
-| ReturnType<typeof setagregateWordsAC>
 | ReturnType<typeof deleteDifficaltyWordsAC>
 | ReturnType<typeof setAgregatedWordsAC>
 | ReturnType<typeof setWordPlayingAC>
@@ -134,9 +132,9 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         case DELETE_LEARNED_WORDS:{
             return {...state, words: state.words.filter(el=>(el._id??el.id)!==action.word._id)}
         }
-        case SET_AGREGATE_WORDS: {
-            return {...state, agregateWords: action.data }
-        }
+        // case SET_AGREGATE_WORDS: {
+        //     return {...state, agregateWords: action.data }
+        // }
         case SET_DIFFICALTY_WORDS: {
             return {...state, words: action.data }
         }
