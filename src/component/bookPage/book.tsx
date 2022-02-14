@@ -113,6 +113,7 @@ const BookPage = ()=>{
   
 
   const onHandlerGame =(e: any)=>{
+  
   if(e.target.value ==='/audioCallPage'){
     if(isLogin){
       filter={
@@ -121,10 +122,10 @@ const BookPage = ()=>{
             {"userWord.optional.learned": false},
             {"userWord":null}
           ]},
-          {"page": page}
+          {"page": page }, {"group":group }
         ]
       } 
-      dispatch(setWordsUser(group,page, filter))
+      dispatch(setWordsUser(group, page, filter))
       history.push(e.target.value)
     }else {
       dispatch(setWords(group, page))
@@ -139,10 +140,10 @@ const BookPage = ()=>{
             {"userWord.optional.learned": false},
             {"userWord":null}
           ]},
-          {"page": page}
+          {"page": page }, {"group":group }
         ]
       } 
-      dispatch(setWordsUser(group,page, filter))
+      dispatch(setWordsUser(group, page, filter))
       history.push(e.target.value)
     }else {
       dispatch(setWords(group, page))
@@ -162,7 +163,7 @@ const BookPage = ()=>{
                  <select value = {page} onChange={onHandlerPage}>{pages.map((p, i)=>{return <option  key={i} value={p}>{p+1}</option>})}</select> 
                  <button onClick={onHandlerNextPage}>next</button>
                  </>
-                <select onChange={onHandlerGame} >{SECTIONS_GAME.map((g, i)=>{return <option key={g.id} value={g.url}>{g.name}</option>})}</select>
+                <select onChange={onHandlerGame}>{SECTIONS_GAME.map((g, i)=>{return <option key={g.id} value={g.url}>{g.name}</option>})}</select>
              </div>
         <Grid container>
           {!isLogin && pathName==='/vocabulary' ? <>Необходиомо авторизоваться</> 
