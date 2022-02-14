@@ -1,6 +1,8 @@
+import { useHistory } from "react-router-dom";
 import "./games.scss";
 
 const GamesPage = () => {
+  const history = useHistory()
   return (
     <div className="games">
       <div className="game game-1">
@@ -14,7 +16,7 @@ const GamesPage = () => {
         </div>
       </div>
 
-      <div className="game game-2">
+      <div className="game game-2" onClick={()=>history.push('/audioCallPage')}>
         <div className="game__img game__img-audio"></div>
         <div className="game__head">
         <div className="game__name">Аудиовызов</div>

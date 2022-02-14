@@ -288,10 +288,8 @@ export const createDifficaltWords=(word: WordsType, difficulty: string)=>(dispat
 }
 export const setAgregateWords = (group: number, page: number, filter: any) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
     const userId=getState().user.user.userId
-    const {group, page} = getState().words
+    //const {group, page} = getState().words
     const wordsPerPage: number = 20
-    //@ts-ignore
-    //{"$or":[{"userWord.difficulty":"hard"}]}
 
     api.get(`/users/${userId}/aggregatedWords`, {params: {
         group, page, wordsPerPage, filter

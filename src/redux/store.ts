@@ -5,10 +5,12 @@ import SprintGameReducer from "./sprintReducer";
 import StatistiksReducer from "./statistiksReducer";
 import WordsReducer from "./wordsReducer";
 import UserReducer from "./userReducer";
+import GameReducer from "./gameReducer";
 
 const reducer = combineReducers({
     user: UserReducer,
     words: WordsReducer,
+    game: GameReducer,
     statistiks: StatistiksReducer,
     audioCollGame: AudioCollGameReducer,
     sprintGame: SprintGameReducer

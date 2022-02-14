@@ -43,7 +43,7 @@ function AdioWord ({wordPlaying, word, audio, setWordPlaying }: PropsType) {
       setWordPlaying(null);
     }
   
-    if (wordPlaying !== word._id ?? word.id) {
+    if (wordPlaying !== (word._id ?? word.id)) {
       return <PlayCircleOutlineIcon className={styles.audioIcon} color="action" fontSize="large" onClick={() => playAudio(audio, word)} />;
     } return <PauseCircleOutlineIcon className={styles.audioIcon} color="action" fontSize="large"  onClick={() => pauseAudio(audio)} />;
   }

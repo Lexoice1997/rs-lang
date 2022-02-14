@@ -15,6 +15,7 @@ import { setIsLoginAC } from "../../redux/userReducer";
 import AudioWordContainer from "../aydioWords/aydioWordsContainer";
 import { useHistory } from "react-router-dom";
 import { SECTIONS_GAME } from "../common/gameConst";
+import { setWordsGame, setWordsUser } from "../../redux/gameReducer";
 
 
 const BookPage = ()=>{
@@ -22,37 +23,32 @@ const BookPage = ()=>{
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
     const dispatch = useDispatch();
     const pages = [...Array(30)].map((e,i)=> i+0)
-    const [games, setGames] = useState([{name: 'Спринт', url: '/sprint'}, {name: 'Аудиовызов', url: '/audiocoll'}])
     const words = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.words.words)
-    const page = useSelector<ReducerAppType, number>((state)=>state.words.page)
-    const group = useSelector<ReducerAppType, number>((state)=>state.words.group)
+    const page = +useSelector<ReducerAppType, number>((state)=>state.words.page)
+    const group = +useSelector<ReducerAppType, number>((state)=>state.words.group)
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
     const audio = useRef(new Audio());
-    // const agregateWords = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.words.agregateWords);
     const history = useHistory()
     const pathName = history.location.pathname
     
     let filter = {}
 
     if(isLogin && pathName ==='/textBook'){  
-      filter = {}   
+      filter={"$and":[{"group": +group, "page": +page}]}  
     }
     if(isLogin && pathName ==='/vocabulary'){  
       filter={"$or":[{"userWord.difficulty":"hard"}]}  
     }
     
-    useEffect(() => { 
-       if(pathName ==='/textBook'){
-        
-        dispatch(setAgregateWords( group, page, filter))
-        
-      } if(pathName ==='/vocabulary'){
-        
-        filter={"$or":[{"userWord.difficulty":"hard"}]}
-        dispatch(setAgregateWords( group, page, filter)) 
-      } 
-        
+    useEffect(() => {
+      if(!isLogin && pathName ==='/textBook'){
         dispatch(setWords(group, page))
+      } else if(pathName ==='/textBook' && isLogin){
+       
+        dispatch(setAgregateWords(group, page, filter))
+      } else if(pathName ==='/vocabulary' && isLogin){
+        dispatch(setAgregateWords( group, page, filter)) 
+      } else {dispatch(setWords(group, page))}
 
     }, [group, page])
 
@@ -66,7 +62,7 @@ const BookPage = ()=>{
 
    const onHandlerGroup=(e: any)=>{
        let valueGroup: number = Number(localStorage.getItem('group'))
-         valueGroup = e.target.value
+         valueGroup = +(e.target.value)
          localStorage.setItem('group', JSON.stringify(valueGroup))  
         dispatch(setGroupsAC(e.target.value))
    }
@@ -75,7 +71,7 @@ const BookPage = ()=>{
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = e.target.value
     localStorage.setItem('page', JSON.stringify(valuePage))
-    dispatch(setPageAC(e.target.value))
+    dispatch(setPageAC(+e.target.value))
   }
 
   const onHandlerNextPage = ()=>{
@@ -110,14 +106,51 @@ const BookPage = ()=>{
   }
 
   const onHandlerFromDifficaltyToLearned=(word: WordsType, difficulty:string, optional: {})=>{
-    
-    dispatch(updateWords(word, difficulty, optional))
     dispatch(createLernedWords(word, optional))
+    dispatch(updateWords(word, difficulty, optional))
     dispatch(deleteDifficaltyWordsId(word))   
   }
   
+  
+
   const onHandlerGame =(e: any)=>{
-   history.push(e.target.value)  
+  if(e.target.value ==='/audioCallPage'){
+    if(isLogin){
+      filter={
+        "$and": [
+          {"$or":[
+            {"userWord.optional.learned": false},
+            {"userWord":null}
+          ]},
+          {"page": page}
+        ]
+      } 
+      dispatch(setWordsUser(group,page, filter))
+      history.push(e.target.value)
+    }else {
+      dispatch(setWords(group, page))
+      history.push(e.target.value)
+    }
+   }
+   if(e.target.value ==='/sprint'){
+    if(isLogin){
+      filter={
+        "$and": [
+          {"$or":[
+            {"userWord.optional.learned": false},
+            {"userWord":null}
+          ]},
+          {"page": page}
+        ]
+      } 
+      dispatch(setWordsUser(group,page, filter))
+      history.push(e.target.value)
+    }else {
+      dispatch(setWords(group, page))
+      history.push(e.target.value)
+    }
+   }
+
   }
     return (
         <div>
