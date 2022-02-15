@@ -72,7 +72,6 @@ const initialState: InitialStateWordsType = {
     isLoading: false,
     error: '',
     wordPlaying: null,
-    //agregateWords: []
 }
 export type ActionType = 
 | ReturnType<typeof loadingAC>
@@ -132,9 +131,6 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         case DELETE_LEARNED_WORDS:{
             return {...state, words: state.words.filter(el=>(el._id??el.id)!==action.word._id)}
         }
-        // case SET_AGREGATE_WORDS: {
-        //     return {...state, agregateWords: action.data }
-        // }
         case SET_DIFFICALTY_WORDS: {
             return {...state, words: action.data }
         }

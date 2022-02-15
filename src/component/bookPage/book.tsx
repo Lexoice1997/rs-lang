@@ -113,7 +113,6 @@ const BookPage = ()=>{
   
 
   const onHandlerGame =(e: any)=>{
-  
   if(e.target.value ==='/audioCallPage'){
     if(isLogin){
       filter={
