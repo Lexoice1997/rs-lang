@@ -1,7 +1,4 @@
-
-import exp from "constants";
 import { Dispatch } from "react";
-import { isOptionalChain } from "typescript";
 import api from "../api/api";
 import { ReducerAppType } from "./store";
 import { loadingAC, SET_LOADER } from "./userReducer";
@@ -16,11 +13,12 @@ export const WORD_PLAYING = 'WORD_PLAYING'
 export const DELETE_DIFFICALTY_WORDS = 'DELETE_DIFFICALTY_WORDS'
 export const CREATE_LEARNED_WORDS = 'CREATE_LEARNED_WORDS'
 export const DELETE_LEARNED_WORDS = 'DELETE_LEARNED_WORDS'
-
+export const CREATE_USER_GAME_WARD = 'CREATE_USER_GAME_WARD,'
+export const CREATE_USER_WORD = 'CREATE_USER_WORD'
 
 export type UserWordType = {
     difficulty: string,
-    optional: {learned?: boolean}
+    optional: {learned?: boolean, count?: number, correct?: boolean, uncoreect?: boolean}
 }
 
 export type AgregatedResultsArrType = {
@@ -52,18 +50,19 @@ export type WordsType=  {
     userWord?: UserWordType
 }
  export type InitialStateWordsType = {
-     words : Array<WordsType>
-     group: number
-     page: number
-     isLoading: boolean
-     error: string
-     wordPlaying: string | null,
-     //agregateWords: Array<WordsType>
+    words : Array<WordsType>
+    group: number
+    page: number
+    isLoading: boolean
+    error: string
+    wordPlaying: string | null,
+     
  }
-//@ts-ignore
- const group: number = +JSON.parse(localStorage.getItem('group'))
- //@ts-ignore
- const page: number = +JSON.parse(localStorage.getItem('page'))
+const dataGroupFormLocalStorage: string | null = localStorage.getItem('group')
+const group: number = +JSON.parse(dataGroupFormLocalStorage !== null ? dataGroupFormLocalStorage : '0')
+
+const dataPageFormLocalStorage: string | null = localStorage.getItem('page')
+const page: number = +JSON.parse(dataPageFormLocalStorage !== null ? dataPageFormLocalStorage : '0')
 
 const initialState: InitialStateWordsType = {
     words: [],
@@ -79,13 +78,14 @@ export type ActionType =
 | ReturnType<typeof setGroupsAC >
 | ReturnType<typeof setPageAC>
 | ReturnType<typeof setErrorWordsAC >
-| ReturnType<typeof createDificaltyWordsAC>
 | ReturnType<typeof deleteDifficaltyWordsAC>
 | ReturnType<typeof setAgregatedWordsAC>
-| ReturnType<typeof setWordPlayingAC>
-| ReturnType<typeof createLearnedWordAC>
-| ReturnType<typeof deleteLearnedWordAC>  
+| ReturnType<typeof setWordPlayingAC> 
 | ReturnType<typeof updateWordsAC> 
+| ReturnType<typeof createUserGameWordAC> 
+| ReturnType<typeof createUserWordAC> 
+
+
 
 const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsType=>{
     
@@ -105,42 +105,45 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         case SET_ERROR_WORDS:{
             return{...state, error: action.error}
         }
-        case CREATE_DIFFICALTY_WORDS:{
-           //@ts-ignore
-            return {...state, words: state.words.map(el=>{
-            
-                if((el._id??el.id)===action.word._id){
-                    
-                    return {...el, userWord: {...el.userWord, difficulty: action.difficulty}
-                }
-                } return el
-            })}
-        }
         case APDATE_WORDS:{
-            //@ts-ignore
-            return {...state, words: state.words.map(el=>{
-                if((el._id??el.id)===action.word._id){
-                    return{...el, userWord:{...el.userWord, difficulty: action.difficulty, optional: action.optional}}
-                } return el
-            })}
+        
+            return {
+                ...state,
+                words: state.words.map(
+                     (el) => (el._id??el.id)===action.word._id 
+                     ? {...el, userWord: el.userWord 
+                        ?  {...el.userWord,  difficulty: action.difficulty || '', optional: {...el.userWord.optional, ...action.optional}} 
+                        : el.userWord } 
+                    : el
+                      )
+            //     words: state.words.map(el=>{
+            //     if((el._id??el.id)===action.word._id){
+            //         return{...el, userWord:{...el.userWord, difficulty: action.difficulty, optional: action.optional}}
+            //     } return el
+            // })
+        }
         }
         case DELETE_DIFFICALTY_WORDS:{
             
             return {...state, words: state.words.filter(el=>(el._id??el.id)!==action.word._id)}
         }
-        case DELETE_LEARNED_WORDS:{
-            return {...state, words: state.words.filter(el=>(el._id??el.id)!==action.word._id)}
-        }
         case SET_DIFFICALTY_WORDS: {
             return {...state, words: action.data }
         }
-        case CREATE_LEARNED_WORDS:{
-            
+        case CREATE_USER_GAME_WARD:{
             //@ts-ignore
             return {...state, words: state.words.map(el=>{
-                if((el._id??el.id)===action.word._id){
-                    return {...el, userWord: {...el.userWord, optional: action.optional}}
-                }return el
+                if((el._id??el.id)===(action.word._id ?? action.word.id)){
+                    return {...el, userWord:{...el.userWord, optional: action.optional}}
+                } return el
+            })}
+        }
+        case CREATE_USER_WORD:{
+            //@ts-ignore
+            return {...state, words: state.words.map(el=>{
+                if((el._id??el.id)===(action.word._id ?? action.word.id)){
+                    return {...el, userWord:{...el.userWord,difficulty: action.difficulty ,optional: action.optional}}
+                } return el
             })}
         }
         case WORD_PLAYING:{
@@ -178,14 +181,6 @@ const setErrorWordsAC=(error: string)=>{
     } as const
 }
 
-const createDificaltyWordsAC = (word: WordsType, difficulty: string)=>{
-    return{
-        type: CREATE_DIFFICALTY_WORDS,
-        word, 
-        difficulty
-    } as const
-}
-
 const setAgregatedWordsAC = (data: any)=>{
     
     return{
@@ -209,21 +204,13 @@ export const setWordPlayingAC = (wordId: string| null) => {
     } as const
   }
 
-  export const createLearnedWordAC = (word: WordsType, optional: any) => {
+  export const createUserGameWordAC = (word: WordsType, optional:any)=>{
     return {
-        type: CREATE_LEARNED_WORDS,
+        type: CREATE_USER_GAME_WARD,
         word,
         optional
-    } as const
-  }  
-
-  export const deleteLearnedWordAC = (word: WordsType) => {
-    return {
-        type: DELETE_LEARNED_WORDS,
-        word
-    } as const
+    }as const
   }
-
   export const updateWordsAC = (word: WordsType, difficulty: string| undefined | null, optional:{}| undefined)=>{
     return{
         type: APDATE_WORDS,
@@ -248,7 +235,6 @@ export const updateWords = (word: WordsType, difficulty: string | undefined | nu
     api.put(`/users/${userId}/words/${word._id ?? word.id}`, {difficulty: status, optional: param})
     .then((res)=>{
         dispatch(updateWordsAC(word, status, param))
-        console.log(res.data)
     })
     .catch((err)=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
@@ -271,25 +257,9 @@ export const setWords = (group: number, page: number) => (dispatch: Dispatch<Act
     })
 }
 
-
-
-export const createDifficaltWords=(word: WordsType, difficulty: string)=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void=>{
-    
-    const userId=getState().user.user.userId
-    api.post(`/users/${userId}/words/${word._id ?? word.id}`, {difficulty: difficulty})
-     .then(res=>{
-         dispatch(createDificaltyWordsAC(word, difficulty))    
-     })
-     .catch(err=>{
-        dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
-
-     })
-}
 export const setAgregateWords = (group: number, page: number, filter: any) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
     const userId=getState().user.user.userId
-    //const {group, page} = getState().words
     const wordsPerPage: number = 20
-
     api.get(`/users/${userId}/aggregatedWords`, {params: {
          wordsPerPage, filter
     }})
@@ -315,28 +285,34 @@ export const deleteDifficaltyWordsId = (word: WordsType)=>(dispatch: Dispatch<Ac
     })
 }
 
-export const createLernedWords=(word: WordsType, optional: {})=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void=>{
-    
-    const userId=getState().user.user.userId
+export const createUserGameWord = (word: WordsType, optional?:{})=>(dispatch:Dispatch<ActionType>, getState:  () => ReducerAppType):void=>{
+    const userId=getState().user.user.userId 
     api.post(`/users/${userId}/words/${word._id ?? word.id}`, {optional: optional})
-     .then(res=>{
-        dispatch(createLearnedWordAC(word, optional))   
-     })
-     .catch(err=>{
-        dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
-        
+    .then((res)=>{
+        dispatch(createUserGameWordAC(word, optional))
+    })
+    .catch(err=>{
+        dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))   
      })
 }
 
-export const deleteLernedWords=(word: WordsType)=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void=>{
+export const createUserWordAC = (word: WordsType,difficulty?: string, optional?: {})=>{
+    return{
+        type: CREATE_USER_WORD,
+        word,
+        difficulty,
+        optional 
+    }as const
+}
+
+export const createUserWord = (word: WordsType, difficulty?: string,   optional?: {})=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void=>{
     const userId=getState().user.user.userId
-    api.delete(`/users/${userId}`)
-     .then(res=>{
-       dispatch(deleteLearnedWordAC(word))
-     })
-     .catch(err=>{
-        dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
-        
+    api.post(`/users/${userId}/words/${word._id ?? word.id}`, {difficulty: difficulty,optional: optional})
+    .then((res)=>{
+        dispatch(createUserWordAC(word, difficulty, optional))
+    })
+    .catch(err=>{
+        dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))   
      })
 }
 
