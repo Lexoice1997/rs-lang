@@ -7,7 +7,7 @@ import { Box, Button, IconButton, Zoom } from '@material-ui/core';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
-import { createLernedWords, deleteDifficaltyWordsId, updateWords, WordsType } from '../../redux/wordsReducer';
+import { createUserGameWord, createUserWord, deleteDifficaltyWordsId, updateWords, WordsType } from '../../redux/wordsReducer';
 import { StatistiksType } from './audioCollPage';
 import { useDispatch } from 'react-redux';
 
@@ -29,7 +29,6 @@ const Game = ({ words, statistics, onFinish}:any) => {
   const [answer, setAnswer] = useState<WordsType | null>(null);
   const [skip, setSkip] = useState<boolean>(false);
   const [sound, setSound] = useState<boolean>(true);
-
   const dispatch = useDispatch()
   const currentWord: WordsType = words[current]; //1 элемент из массива
   const currentAudio = new Audio(`${baseUrl}/${words[current].audio}`);
@@ -49,26 +48,47 @@ const Game = ({ words, statistics, onFinish}:any) => {
   };
 
   const onHandlerAnswer = useCallback(
-    
     (answerWord, skip = false) => {
       if (answer) return;
       const isAnswerCorrect = (currentWord.id ?? currentWord._id ) === (answerWord.id ?? answerWord._id)&& !skip;
+      let count = currentWord.userWord?.optional.count ? currentWord.userWord?.optional.count : 0
+     
       if (isAnswerCorrect) {
+        count = count + 1
         sound && new Audio(correct).play();
-        statistics.current.counter+=1
-        statistics.current.words.push({ ...currentWord, correct: true});
-        // if(currentWord.userWord?.difficulty){
-        //   dispatch(updateWords(currentWord, null, {learned: true} ))
-        //   dispatch(deleteDifficaltyWordsId(currentWord))
-        // }else {dispatch(createLernedWords(currentWord, {learned: true}))}
+        statistics.current.longestWinStrike += 1
+        statistics.current.words.push({ ...currentWord, correct: true, newWord: true});  
+        if(currentWord.hasOwnProperty('userWord')){
+          //@ts-ignore
+          const dif = currentWord.userWord.difficulty
+          if(currentWord.userWord?.optional.count === 2 && currentWord.userWord.difficulty!=='hard'){ 
+            dispatch(updateWords(currentWord, dif, {learned: true, count: count, correct: true, uncorrect: false}))
+          } else if(currentWord.userWord?.difficulty ==='hard' && currentWord.userWord?.optional.count === 4){
+            dispatch(updateWords(currentWord, 'easy', {learned: true, count: count, correct: true, uncorrect: false}))
+            setTimeout(()=>{
+              dispatch(deleteDifficaltyWordsId(currentWord))
+            }, 0)
+            setTimeout(() => {
+              dispatch(createUserWord(currentWord, 'easy', {learned: true, count: count, correct: true, uncorrect: false})) 
+            }, 500);             
+          } else { 
+            dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: true, uncorrect: false}))}    
+        } else {
+          dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: true, uncorrect: false})) 
+        }
+        
       } else {
-        statistics.current.counter=0
+        count = 0
+        statistics.current.longestWinStrike = 0
         sound && new Audio(error).play();
-        statistics.current.words.push({ ...currentWord, correct: false });
-        // if(currentWord.userWord?.difficulty){
-        //   dispatch(updateWords(currentWord, null, {learned: false} ))
-        //   dispatch(deleteDifficaltyWordsId(currentWord))
-        // }else {dispatch(createLernedWords(currentWord, {learned: false}))}
+        statistics.current.words.push({ ...currentWord, correct: false, newWord: true}); 
+        if(currentWord.hasOwnProperty('userWord')){
+           //@ts-ignore
+           let dif = currentWord.userWord.difficulty
+          if(currentWord.userWord?.optional.learned===true){
+            dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: false, uncorrect: true}))
+          }
+        } else {dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: false, uncorrect: true})) }
       }
       setAnswer(answerWord);
       setSkip(skip);

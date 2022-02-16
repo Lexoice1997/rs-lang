@@ -1,13 +1,15 @@
-
+import api from "../../api/api";
 import { Button, IconButton } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Divider from "@material-ui/core/Divider";
 import VolumeUpIcon from '@material-ui/icons/VolumeUp'
 import Typography from "@material-ui/core/Typography";
-import { useCallback, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { setWordsGameAC } from "../../redux/gameReducer";
+import { setWordsGameAC, setWordsUserAC } from "../../redux/gameReducer";
+import { ReducerAppType } from "../../redux/store";
+
 
 
 const GameStatistics = ({ statistics, onFinish}:any) => {
@@ -15,7 +17,31 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com' 
     const history = useHistory()
     const audio = useRef();
+    const dispatch = useDispatch();
+    const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
+    const userId = useSelector<ReducerAppType, string>((state)=>state.user.user.userId)
+    const correctWords = statistics.current.words.filter((word:any) => word.correct);
+    const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
+    const longestWinStrike = statistics.current.longestWinStrike
+    const percentCorrectAnswers = Math.round(correctWords.length / (correctWords.length + unCorrectWords.legth) * 100)
+    const numberOfNewWords = (statistics.current.words.filter((word: any)=> (word.newWord && word.userWord.optional.count===1) || word.newWord && word.userWord.optional.count===0)).length
+    const learnedWords = (statistics.current.words.filter((word:any)=>word.userWord.optional.learned)).length  
+    console.log(userId)    
+   async function putStatistics (){
+       try{
+        const dataStatistics = await api.get(`/users/${userId}/statistics`)
+        await api.put(`/users/${userId}/statistics`, {"learnedWords": learnedWords, "optional": {
+            ...dataStatistics.data.optional,
+            audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: numberOfNewWords, longestWinStrike: longestWinStrike},
+        } })
+       } catch(err){
+        console.log(err)
+       }
+    }
 
+    useEffect(()=>{
+        putStatistics()
+    }, [])
     const onAudioPlay = useCallback((audioPath) => {
         //@ts-ignore
         audio.current?.pause();
@@ -23,15 +49,15 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
         audio.current = new Audio(`${baseUrl}/${audioPath}`);
         //@ts-ignore
         audio.current.play();
-    }, []);
+    }, []);  
 
-    const dispatch = useDispatch();
-    const correctWords = statistics.current.words.filter((word:any) => word.correct);
-    const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
-    
    const setNewGame =()=>{
-    dispatch(setWordsGameAC([]))
-    onFinish(false)
+    if(!isLogin){
+     dispatch(setWordsGameAC([]))
+     onFinish(false)
+    }else {
+     dispatch(setWordsUserAC ([]))
+     onFinish(false)}   
    }
 
     return (
