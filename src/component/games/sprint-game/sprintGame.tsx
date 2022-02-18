@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styles from './sprintGame.module.scss';
-import {Close, Fullscreen, VolumeOff} from "@material-ui/icons";
+import {Close, VolumeOff, VolumeUp} from "@material-ui/icons";
 import { useTypedSelector } from '../../../hooks/useTypedSelector';
 import { useActions } from '../../../hooks/useSprint';
 import { getRandomInt } from '../../../js';
@@ -8,10 +8,16 @@ import SprintDots from './sprintDots';
 import SprintResult from './sprintResult';
 import {useLocation} from 'react-router-dom'
 import { NavLink } from 'react-router-dom';
+//@ts-ignore
+import correctSound from '../../../assets/audio/correct.mp3';
+//@ts-ignore
+import errorSound from '../../../assets/audio/error.mp3';
 
 const SprintGame: React.FC = () => {
   let location = useLocation();
   let [time, setTime] = useState(60);
+  const [volume, setVolume] = useState(false);
+  const [longestStrike, setLongestStrike] = useState(0);
   const {
         fetchWords,
         setWord,
@@ -21,7 +27,8 @@ const SprintGame: React.FC = () => {
         setBird,
         setCorrectAnswer,
         setIncorrectAnswer,
-        resetData
+        resetData,
+        setLongestWinStrike,
       } = useActions()
 
   const {
@@ -32,12 +39,14 @@ const SprintGame: React.FC = () => {
         totalScore,
         winStrikeScore,
         winStrike,
-        bird} = useTypedSelector(state => state.sprintGame);
+        longestWinStrike,
+        bird,
+      } = useTypedSelector(state => state.sprintGame);
 
   function setQuestion() {
     const origin = getRandomInt(0, 19);
     const translate = getRandomInt(0, 19);
-    const middle = getRandomInt(0, 19); 
+    const middle = getRandomInt(0, 19);
 
     const arr = [origin, translate, middle];
     const randomNum = getRandomInt(0, 2);
@@ -46,9 +55,19 @@ const SprintGame: React.FC = () => {
     setWord(words, origin, resultNum)
   }
 
+  function toggleVolume() {
+    if (volume) {
+      setVolume(false)
+    } else {
+      setVolume(true)
+    }
+  }
+
   function isCorrect() {
     if (word?.originWordId === word?.translateWordId) {
-      setCorrectAnswer({origin: word!.originWord, translate: word!.translateWord})
+      volume && new Audio(correctSound).play();
+      setCorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+      setLongestStrike(longestStrike + 1)
       if (winStrike === 3) {
         setWinStrike(0)
         if (bird === 3) {
@@ -62,17 +81,25 @@ const SprintGame: React.FC = () => {
       }
       setTotalScore(winStrikeScore);
     } else {
+      volume && new Audio(errorSound).play();
       setBird(0)
       setWinstrikeScore(0)
       setWinStrike(0)
-      setIncorrectAnswer({origin: word!.originWord, translate: word!.translateWord})
+      setIncorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+
+      if (longestWinStrike < longestStrike) {
+        setLongestWinStrike(longestStrike)
+      }
+      setLongestStrike(0)
     }
     setQuestion()
   }
 
   function isIncorrect() {
     if (word?.originWordId !== word?.translateWordId) {
-      setCorrectAnswer({origin: word!.originWord, translate: word!.translateWord})
+      volume && new Audio(correctSound).play();
+      setCorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+      setLongestStrike(longestStrike + 1)
       if (winStrike === 3) {
         setWinStrike(0)
         if (bird === 3) {
@@ -86,15 +113,21 @@ const SprintGame: React.FC = () => {
       }
       setTotalScore(winStrikeScore);
     } else {
+      volume && new Audio(errorSound).play();
       setBird(0)
       setWinstrikeScore(0)
       setWinStrike(0)
-      setIncorrectAnswer({origin: word!.originWord, translate: word!.translateWord})
+      setIncorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+
+      if (longestWinStrike < longestStrike) {
+        setLongestWinStrike(longestStrike)
+      }
+      setLongestStrike(0)
     }
     setQuestion();
   }
 
-  function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+  function onKeyDown(event: any) {
     if (event.code === "ArrowLeft") {
       isIncorrect()
     }
@@ -117,13 +150,12 @@ const SprintGame: React.FC = () => {
     }
   }, [words])
 
-  function goHome() {
-    resetData()
-
-  }
+  console.log(time)
 
   if (loading) {
-    return <h1>Идет загрузка...</h1>
+    return 	<div className={styles.sprintGame}>
+    
+    </div>
   }
 
   if (error) {
@@ -142,7 +174,7 @@ const SprintGame: React.FC = () => {
   return (
     <div className={styles.sprintGame} onKeyDown={onKeyDown} tabIndex={0}>
       <div className={styles.sprintGameHeader}>
-        <VolumeOff className={styles.sprintVolumeBtn}/>
+        {volume ? <VolumeUp className={styles.sprintVolumeBtn} onClick={toggleVolume}/> : <VolumeOff className={styles.sprintVolumeBtn}  onClick={toggleVolume}/>}  
       </div>
       <div className={styles.sprintGameBody}>
         <div className={styles.head}>

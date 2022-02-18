@@ -22,3 +22,38 @@
 .isLearnedWord{
     border: 2px solid yellow;
 }
+
+.bookPage {
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-left: 30px;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        width: 50%;
+        margin-bottom: 40px;
+    }
+}
+
+.card {
+    max-width: 350px;
+    margin-bottom: 20px;
+}
+
+.translate {
+    margin-bottom: 10px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    div {
+        font-size: 20px;
+    }
+}
+
+
+

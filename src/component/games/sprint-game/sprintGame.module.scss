@@ -172,7 +172,6 @@
 
 .sprintResult {
   width: 600px;
-  max-height: 60vh;
   margin: auto;
   background: hsla(0,0%,100%,.3);
   padding: 30px 20px;
@@ -240,4 +239,8 @@
     margin-bottom: 15px;
     margin-right: 20px;
   }
+}
+
+.volumeUp {
+  cursor: pointer;
 }

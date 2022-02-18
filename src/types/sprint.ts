@@ -5,11 +5,13 @@ export interface Word {
   translateWord?: string;
   originWordId?: string;
   translateWordId?: string;
+  audio?: string
 }
 
 export interface ResultWord {
   origin?: string;
   translate?: string;
+  audio?: string;
 }
 
 export interface SprintState {
@@ -23,6 +25,7 @@ export interface SprintState {
   bird: number;
   correctAnswer: Array<ResultWord>;
   incorrectAnswer: Array<ResultWord>;
+  longestWinStrike: number;
 }
 
 export enum SprintActionTypes {
@@ -35,6 +38,7 @@ export enum SprintActionTypes {
   SET_CORRECT_ANSWER = 'SET_CORRECT_ANSWER',
   SET_INCORRECT_ANSWER = 'SET_INCORRECT_ANSWER',
   RESET_DATA = 'RESET_DATA',
+  SET_LONGEST_WINSTRIKE = 'SET_LONGEST_WINSTRIKE',
   FETCH_WORDS_SUCCESS = 'FETCH_WORDS_SUCCESS',
   FETCH_WORDS_ERROR = 'FETCH_WORDS_ERROR'
 }
@@ -82,6 +86,11 @@ interface ResetData {
   type: SprintActionTypes.RESET_DATA;
 }
 
+interface SetLongestWinStrike {
+  type: SprintActionTypes.SET_LONGEST_WINSTRIKE;
+  payload: number;
+}
+
 interface FetchWordsSuccessAction {
   type: SprintActionTypes.FETCH_WORDS_SUCCESS;
   payload: Array<WordsType>
@@ -102,4 +111,5 @@ export type SprintAction = FetchWordsAction
                           | SetBird
                           | SetCorrectAnswer
                           | SetIncorrectAnswer
-                          | ResetData;
+                          | ResetData
+                          | SetLongestWinStrike;

@@ -5,14 +5,11 @@ import Routes, { SPRINT_GAME } from "./component/routs";
 import Footer from "./component/footer/footer";
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { HashRouter, withRouter, useHistory} from 'react-router-dom';
+import { withRouter, useHistory} from 'react-router-dom';
 import { getUserId } from './api/api';
 import Header from './component/header/header';
 import NavBar from './component/navBar/navBar';
 import { checkAuthUser } from './redux/userReducer';
-import { getRandomInt } from "./js";
-import { useActions } from "./hooks/useSprint";
-import { useTypedSelector } from "./hooks/useTypedSelector";
 import { Route } from 'react-router-dom';
 import SprintGame from './component/games/sprint-game/sprintGame';
 

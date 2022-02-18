@@ -17,6 +17,9 @@ import { useHistory } from "react-router-dom";
 import { SECTIONS_GAME } from "../common/gameConst";
 import { setWordsGame, setWordsUser } from "../../redux/gameReducer";
 import { NamedTupleMember } from "typescript";
+import { Box, CardActionArea, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FormControl } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 
 
 const BookPage = ()=>{
@@ -60,7 +63,7 @@ const BookPage = ()=>{
         }
     }, [isLogin])
 
-   const onHandlerGroup=(e: ChangeEvent<HTMLSelectElement>)=>{
+   const onHandlerGroup=(e: any)=>{
      
        let valueGroup: number = Number(localStorage.getItem('group'))
          valueGroup = +(e.target.value)
@@ -68,7 +71,7 @@ const BookPage = ()=>{
         dispatch(setGroupsAC(+e.target.value))
    }
    
-   const onHandlerPage=(e: ChangeEvent<HTMLSelectElement>)=>{
+   const onHandlerPage=(e: any)=>{
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = +e.target.value
     localStorage.setItem('page', JSON.stringify(valuePage))
@@ -133,32 +136,76 @@ const BookPage = ()=>{
    }
   }
     return (
-        <div>
-            {pathName==='/vocabulary' ? <h2>Сложные слова</h2> : <h2>Учебник</h2>}
-            <div>
-                 <select value={group} onChange={onHandlerGroup}>{SECTIONS_WORDS.map(g=>{
-                     return <option key={g.group} value={g.group}>{g.name}</option>})}</select>
-                 <>
-                 <button  onClick={onHandlerPrevPage }>prev</button> 
-                 <select value = {page} onChange={onHandlerPage}>{pages.map((p, i)=>{return <option  key={i} value={p}>{p+1}</option>})}</select> 
-                 <button onClick={onHandlerNextPage}>next</button>
-                 </>
-                <select onChange={onHandlerGame}>{SECTIONS_GAME.map((g, i)=>{return <option key={g.name} value={g.url}>{g.name}</option>})}</select>
+        <div className={styles.bookPage}>
+            {pathName==='/vocabulary' ? <h1>Сложные слова</h1> : <h1>Учебник</h1>}
+            <div className={styles.header}>
+
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+              <InputLabel id="section-select-label">Раздел</InputLabel>
+                <Select
+                  labelId="section-select-label"
+                  id="demo-simple-select"
+                  value={group}
+                  label="Group"
+                  onChange={onHandlerGroup}
+                >
+                  {SECTIONS_WORDS.map(g=> <MenuItem key={g.group} value={g.group}>{g.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+            </Box>
+            <>
+              <Button variant="contained" onClick={onHandlerPrevPage }>prev</Button>
+
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                <InputLabel id="page-select-label">Страница</InputLabel>
+                  <Select
+                    labelId="page-select-label"
+                    id="demo-simple-select"
+                    value={page}
+                    label="Page"
+                    onChange={onHandlerPage}
+                  >
+                  {pages.map((p, i) => <MenuItem  key={i} value={p}>{p+1}</MenuItem>)}
+                  </Select>
+                </FormControl>
+              </Box>
+
+              <Button variant="contained" onClick={onHandlerNextPage}>next</Button>
+            </>
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth>
+              <InputLabel id="game-select-label">Игра</InputLabel>
+                <Select
+                  labelId="game-select-label"
+                  id="demo-simple-select"
+                  label="Page"
+                  onChange={onHandlerGame}
+                >
+                {SECTIONS_GAME.map((g, i) => <MenuItem  key={g.name} value={g.url}>{g.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+            </Box>
+        
              </div>
+
+            
         <Grid container>
           {!isLogin && pathName==='/vocabulary' ? <>Необходиомо авторизоваться</> 
           : 
             words.length === 0
               ? <Typography component="h5" variant="h5">Не найдено слов</Typography>
               : words.map(word => (
-                <Grid key={word._id} item xs={12} sm={12} md={12}>
-                  <Card  variant="outlined">
-                    <CardMedia
-                      className={styles.cardPicture}
-                      image={`${baseUrl}/${word.image}`}
-                    />
-  
-                    <div>
+                <Grid key={word._id} item xs={12} sm={6} md={4}>
+                  <Card className={styles.card}>
+                    <CardActionArea>
+                      <CardMedia
+                        component="img"
+                        height="250"
+                        image={`${baseUrl}/${word.image}`}
+                        alt={`${word.image}`}
+                      />
                       <CardContent >
                         <Typography component="h5" variant="h5" className={styles.cardTitle}>
                           <Tooltip title={`${SECTIONS_WORDS[word.group].name}`}>
@@ -167,39 +214,43 @@ const BookPage = ()=>{
                           {word.word} - {word.transcription}
                           <AudioWordContainer  word={word} audio={audio} />
                         </Typography>
-                        <Typography variant="subtitle1" color="textSecondary">
+                        <Typography variant="subtitle1" color="textSecondary" className={styles.translate}>
                           {word.wordTranslate}
                         </Typography>
                         <Typography variant="subtitle1" >
                           <div dangerouslySetInnerHTML={{ __html: word.textMeaning }} />
                         </Typography>
-                        <Typography variant="subtitle1" >
+                        <Typography variant="subtitle2" color="textSecondary" className={styles.translate}>
                           { word.textMeaningTranslate}
                         </Typography>
                         <Typography variant="subtitle1">
                           <div dangerouslySetInnerHTML={{ __html: word.textExample }} />
                         </Typography>
-                        <Typography variant="subtitle1" >
+                        <Typography variant="subtitle2" color="textSecondary" className={styles.translate}>
                           {word.textExampleTranslate}
                         </Typography>
+                        <div className={styles.buttons}>
+                          {
+                            (isLogin && pathName ==='/textBook')
+                            ? <>
+                                <Button size="small" variant="contained" color="secondary" className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}>сложные</Button>
+                                <Button size="small" variant="contained" color="primary" className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}>изученные</Button>
+                                <div>
+                                  0 / 0
+                                </div>
+                              </> 
+                            : (isLogin && pathName ==='/vocabulary' ) 
+                            ? <>
+                                <Button size="small" variant="contained" color="secondary" onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</Button>
+                                <Button size="small" variant="contained" color="primary" onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}>в изученные слова</Button>
+                                <div>0 / 0</div>
+                              </>
+                              
+                            : ''
+                          }
+                        </div>
                       </CardContent>
-                    </div> 
-                    {
-                    (isLogin && pathName ==='/textBook')
-                    ? <><button className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}>сложные слова</button>
-                        <button className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}>изученные слова</button>
-                        <span>отгадано {0}</span>
-                        <span>неотгадано {0}</span>
-                      </> 
-                    : (isLogin && pathName ==='/vocabulary' ) 
-                    ? <><button onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</button>
-                        <button onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}>в изученные слова</button>
-                        <span>отгадано {0}</span>
-                        <span>неотгадано {0}</span>
-                      </>
-                      
-                    : ''
-                    }
+                    </CardActionArea>
                   </Card>
                 </Grid>
               ))

@@ -1,4 +1,4 @@
-import api from "../../api/api";
+import api, { getUserId } from "../../api/api";
 import { Button, IconButton } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Divider from "@material-ui/core/Divider";
@@ -10,8 +10,6 @@ import { useHistory } from "react-router-dom";
 import { setWordsGameAC, setWordsUserAC } from "../../redux/gameReducer";
 import { ReducerAppType } from "../../redux/store";
 
-
-
 const GameStatistics = ({ statistics, onFinish}:any) => {
     console.log(statistics)
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com' 
@@ -19,20 +17,22 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     const audio = useRef();
     const dispatch = useDispatch();
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
-    const userId = useSelector<ReducerAppType, string>((state)=>state.user.user.userId)
+    // const userId = useSelector<ReducerAppType, string>((state)=>state.user.user.userId)
     const correctWords = statistics.current.words.filter((word:any) => word.correct);
     const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
     const longestWinStrike = statistics.current.longestWinStrike
     const percentCorrectAnswers = Math.round(correctWords.length / (correctWords.length + unCorrectWords.legth) * 100)
-    const numberOfNewWords = (statistics.current.words.filter((word: any)=> (word.newWord && word.userWord.optional.count===1) || word.newWord && word.userWord.optional.count===0)).length
-    const learnedWords = (statistics.current.words.filter((word:any)=>word.userWord.optional.learned)).length  
-    console.log(userId)    
-   async function putStatistics (){
+    // const numberOfNewWords = (statistics.current.words.filter((word: any)=> (word.newWord && word.userWord.optional.count===1) || word.newWord && word.userWord.optional.count===0)).length
+    // const learnedWords = (statistics.current.words.filter((word:any)=>word.userWord.optional.learned)).length
+    // console.log(userId)
+    const userId = getUserId()
+    async function putStatistics (){
        try{
         const dataStatistics = await api.get(`/users/${userId}/statistics`)
-        await api.put(`/users/${userId}/statistics`, {"learnedWords": learnedWords, "optional": {
+        console.log(dataStatistics)
+        await api.put(`/users/${userId}/statistics`, {"learnedWords": 0, "optional": {
             ...dataStatistics.data.optional,
-            audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: numberOfNewWords, longestWinStrike: longestWinStrike},
+            audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: 0, longestWinStrike: longestWinStrike},
         } })
        } catch(err){
         console.log(err)

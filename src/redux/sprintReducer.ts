@@ -11,6 +11,7 @@ const initialState: SprintState = {
     bird: 0,
     correctAnswer: [],
     incorrectAnswer: [],
+    longestWinStrike: 0,
 };
 
 const SprintGameReducer = (state = initialState, action: SprintAction): SprintState => {
@@ -37,6 +38,8 @@ const SprintGameReducer = (state = initialState, action: SprintAction): SprintSt
             return {...state, incorrectAnswer: [...state.incorrectAnswer, action.payload]}
         case SprintActionTypes.RESET_DATA:
             return {...state, incorrectAnswer: [], correctAnswer: [], totalScore: 0, winStrike: 0, winStrikeScore: 10, bird: 0}
+        case SprintActionTypes.SET_LONGEST_WINSTRIKE:
+            return {...state, longestWinStrike: action.payload}
         default: 
             return state
     }
