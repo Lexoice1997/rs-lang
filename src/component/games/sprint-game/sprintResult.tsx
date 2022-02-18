@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme) => ({
   button: {
     fontSize: '80px',
     color: 'white'
+  },
+  input: {
+    fontSize: '20px'
   }
 }))
 
@@ -21,7 +24,7 @@ const SprintResult = () => {
   const userId = getUserId();
 
   const baseUrl = 'https://rs-lang-scorpion.herokuapp.com';
-  
+
   const getAudioCorrectWord = (index: number) => {
     const currentAudio = new Audio(`${baseUrl}/${correctAnswer[index].audio}`);
     currentAudio.play()
@@ -35,10 +38,10 @@ const SprintResult = () => {
   async function putStatistics() {
     try {
       const dataStatistics = await api.get(`/users/${userId}/statistics`);
-      api.put(`/users/${userId}/statistics`, {"learnedWords": dataStatistics.data.learnedWords, 
-      "optional": 
+      api.put(`/users/${userId}/statistics`, {"learnedWords": dataStatistics.data.learnedWords,
+      "optional":
           {...dataStatistics.data.optional,
-          sprintGame: 
+          sprintGame:
                     { percentCorrectAnswers: Math.round(correctAnswer.length / (correctAnswer.length + incorrectAnswer.length) * 100),
                       numberOfNewWords: 0,
                       longestWinStrike: longestWinStrike,
