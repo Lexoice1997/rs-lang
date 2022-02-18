@@ -10,8 +10,6 @@ import { useHistory } from "react-router-dom";
 import { setWordsGameAC, setWordsUserAC } from "../../redux/gameReducer";
 import { ReducerAppType } from "../../redux/store";
 import styles from './audioCallStatistics.module.scss'
-
-
 const GameStatistics = ({ statistics, onFinish}:any) => {
     console.log(statistics)
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com' 
@@ -45,7 +43,7 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
         const dataStatistics = await api.get(`/users/${userId}/statistics`)
         await api.put(`/users/${userId}/statistics`, {"learnedWords": dataStatistics.data.learnedWords, "optional": {
             ...dataStatistics.data.optional,
-            audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: numberOfNewWords, longestWinStrike: longestWinStrike},
+            audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: 0, longestWinStrike: longestWinStrike},
         } })
        } catch(err){
         console.log(err)

@@ -27,7 +27,8 @@ export const setWord = (words: any, indexOriginWord: number, indexTranslateWord:
                                             {originWord: words[indexOriginWord].word, 
                                             translateWord: words[indexTranslateWord].wordTranslate,
                                             originWordId: words[indexOriginWord].id,
-                                            translateWordId: words[indexTranslateWord].id }}
+                                            translateWordId: words[indexTranslateWord].id,
+                                            audio: words[indexOriginWord].audio }}
 }
 
 export const setTotalScore = (score: number): SprintAction => {
@@ -65,4 +66,8 @@ export const setWinstrikeScore = (bird: number): SprintAction => {
 
 export const resetData = (): SprintAction => {
   return {type: SprintActionTypes.RESET_DATA}
+}
+
+export const setLongestWinStrike = (longestWinStrike: number): SprintAction => {
+  return {type: SprintActionTypes.SET_LONGEST_WINSTRIKE, payload: longestWinStrike}
 }
