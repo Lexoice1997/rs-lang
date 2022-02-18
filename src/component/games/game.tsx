@@ -6,10 +6,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Button, IconButton, Zoom } from '@material-ui/core';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import { createUserGameWord, createUserWord, deleteDifficaltyWordsId, updateWords, WordsType } from '../../redux/wordsReducer';
 import { StatistiksType } from './audioCollPage';
 import { useDispatch } from 'react-redux';
+import styles from './audioCallGame.module.scss'
 
 const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
 
@@ -58,37 +58,37 @@ const Game = ({ words, statistics, onFinish}:any) => {
         sound && new Audio(correct).play();
         statistics.current.longestWinStrike += 1
         statistics.current.words.push({ ...currentWord, correct: true, newWord: true});  
-        if(currentWord.hasOwnProperty('userWord')){
-          //@ts-ignore
-          const dif = currentWord.userWord.difficulty
-          if(currentWord.userWord?.optional.count === 2 && currentWord.userWord.difficulty!=='hard'){ 
-            dispatch(updateWords(currentWord, dif, {learned: true, count: count, correct: true, uncorrect: false}))
-          } else if(currentWord.userWord?.difficulty ==='hard' && currentWord.userWord?.optional.count === 4){
-            dispatch(updateWords(currentWord, 'easy', {learned: true, count: count, correct: true, uncorrect: false}))
-            setTimeout(()=>{
-              dispatch(deleteDifficaltyWordsId(currentWord))
-            }, 0)
-            setTimeout(() => {
-              dispatch(createUserWord(currentWord, 'easy', {learned: true, count: count, correct: true, uncorrect: false})) 
-            }, 500);             
-          } else { 
-            dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: true, uncorrect: false}))}    
-        } else {
-          dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: true, uncorrect: false})) 
-        }
+        // if(currentWord.hasOwnProperty('userWord')){
+        //   //@ts-ignore
+        //   const dif = currentWord.userWord.difficulty
+        //   if(currentWord.userWord?.optional.count === 2 && currentWord.userWord.difficulty!=='hard'){ 
+        //     dispatch(updateWords(currentWord, dif, {learned: true, count: count, correct: true, uncorrect: false}))
+        //   } else if(currentWord.userWord?.difficulty ==='hard' && currentWord.userWord?.optional.count === 4){
+        //     dispatch(updateWords(currentWord, 'easy', {learned: true, count: count, correct: true, uncorrect: false}))
+        //     setTimeout(()=>{
+        //       dispatch(deleteDifficaltyWordsId(currentWord))
+        //     }, 0)
+        //     setTimeout(() => {
+        //       dispatch(createUserWord(currentWord, 'easy', {learned: true, count: count, correct: true, uncorrect: false})) 
+        //     }, 500);             
+        //   } else { 
+        //     dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: true, uncorrect: false}))}    
+        // } else {
+        //   dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: true, uncorrect: false})) 
+        // }
         
       } else {
         count = 0
         statistics.current.longestWinStrike = 0
         sound && new Audio(error).play();
         statistics.current.words.push({ ...currentWord, correct: false, newWord: true}); 
-        if(currentWord.hasOwnProperty('userWord')){
-           //@ts-ignore
-           let dif = currentWord.userWord.difficulty
-          if(currentWord.userWord?.optional.learned===true){
-            dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: false, uncorrect: true}))
-          }
-        } else {dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: false, uncorrect: true})) }
+        // if(currentWord.hasOwnProperty('userWord')){
+        //    //@ts-ignore
+        //    let dif = currentWord.userWord.difficulty
+        //   if(currentWord.userWord?.optional.learned===true){
+        //     dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: false, uncorrect: true}))
+        //   }
+        // } else {dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: false, uncorrect: true})) }
       }
       setAnswer(answerWord);
       setSkip(skip);
@@ -115,19 +115,19 @@ const Game = ({ words, statistics, onFinish}:any) => {
   useEffect(() => {
     const keyHandler = (e:any) => {
       switch (e.code) {
-        case 'Digit1':
+        case 'Digit1'|| 'Numpad1':
           onHandlerAnswer(list[0]);
           break;
-        case 'Digit2':
+        case 'Digit2' || 'Numpad2':
           onHandlerAnswer(list[1]);
           break;
-        case 'Digit3':
+        case 'Digit3' || 'Numpad3':
           onHandlerAnswer(list[2]);
           break;
-        case 'Digit4':
+        case 'Digit4' || 'Numpad4':
           onHandlerAnswer(list[3]);
           break;
-        case 'Digit5':
+        case 'Digit5' || 'Numpad5':
           onHandlerAnswer(list[4]);
           break;
         case 'Space':
@@ -153,11 +153,11 @@ const Game = ({ words, statistics, onFinish}:any) => {
   const ViewAnswer = () => {
     return (
       <Zoom in={true}>
-        <Box >
-          <Box style={{ backgroundImage: `url(${baseUrl}/${currentWord.image})` }} />
-          <Box >
-            <IconButton color="default" component="span" onClick={onWordPlay}>
-              <VolumeUpIcon  />
+        <Box className={styles.ansverContainer}>
+          <Box className={styles.ansverIcon} style={{ backgroundImage: `url(${baseUrl}/${currentWord.image})` }} />
+          <Box className={styles.ansverWord}>
+            <IconButton className={styles.ansverVolumeButton} color="default" component="span" onClick={onWordPlay}>
+              <VolumeUpIcon className={styles.iconVolumeButton} />
             </IconButton>
             {currentWord.word}
           </Box>
@@ -168,35 +168,42 @@ const Game = ({ words, statistics, onFinish}:any) => {
 
   return (
     <>
-      <Box >
-        <Box >
+      <Box className={styles.container}>
+        <Box className={styles.content}>
           {
             !answer &&
-            <Box >
+            <Box className={styles.volumeContainer}>
               <IconButton color="default" component="span" onClick={onWordPlay}>
-                <VolumeUpIcon />
+                <VolumeUpIcon className={styles.volumeIcon}/>
               </IconButton>
             </Box>
           }
           {answer && <ViewAnswer />}
         </Box>
-        <Box >
-          {list && list.map((word:WordsType, idx:number) => (
+        <Box className={styles.answersContainer}>
+          {list && list.map((word:WordsType, i:number) => (
             <Box
-              key={idx}
+            className={`
+            ${styles.answers}
+            ${answer ? ((word.id??word._id) === (answer.id??answer?._id) && (answer.id?? answer?._id) === (currentWord.id??currentWord._id)) && styles.answerCorrect : ''}
+            ${answer ? ((word.id??word._id) === (answer.id??answer?._id) && (answer.id??answer?._id) !== (currentWord.id??currentWord._id)) && styles.answerUncorrect : ''}
+            ${answer ? ((word.id??word._id) !== (answer.id??answer?._id) && (currentWord.id??currentWord._id) !== (word.id??word._id) && answer) && styles.unselectedWordsStyle:''}
+            ${answer ?  ((word.id??word._id) !== (answer.id??answer?._id) && (currentWord.id??currentWord._id) === (word.id??word._id) && answer) && styles.wrongChoisRightWordStyle : ''}
+          `}
+              key={i}
               component="div"
               onClick={() => onHandlerAnswer(word)}
             >
-              <Box component="span">
-                {((word._id ?? word.id) === (answer?._id ?? answer?.id) && (answer?._id ?? answer?.id) === (currentWord.id ?? currentWord._id) && !skip) ? <CheckCircleIcon  /> : idx + 1}
+              <Box component="span" className={styles.answerNum}>
+                {((word._id ?? word.id) === (answer?._id ?? answer?.id) && (answer?._id ?? answer?.id) === (currentWord.id ?? currentWord._id) && !skip) ? <CheckCircleIcon className={styles.iconSuccess} /> : ''}
               </Box>
-              <Box component="span">{word.wordTranslate}</Box>
+              <Box className={styles.answerWord} component="span">{word.wordTranslate}</Box>
             </Box>
           ))}
         </Box>
-        {!answer && <Button variant="outlined" onClick={() => onHandlerAnswer(currentWord, true)}>не знаю</Button>}
-        {answer && <Button variant="outlined"  onClick={() => onHandlerNext()}><ArrowRightAltIcon /></Button>}
-        <Box onClick={() => setSound(sound => !sound)}></Box>
+        {!answer && <Button className={styles.notKnow} variant="outlined" onClick={() => onHandlerAnswer(currentWord, true)}>не знаю</Button>}
+        {answer && <Button className={styles.next} variant="outlined"  onClick={() => onHandlerNext()}>вперед</Button>}
+        <Box className={`${styles.sound} ${sound ? styles.volumeSound : styles.muteSound}`} onClick={() => setSound(sound => !sound)}></Box>
       </Box>
     </>
   );

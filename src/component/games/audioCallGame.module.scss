@@ -1,0 +1,202 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Noticia+Text:ital@1&display=swap');
+
+.audioCallContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.buttonStartContainer{
+    display: flex;
+    width: 350px;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+    padding: 50px 0;
+}
+.labelSelect{
+    font-size: 11px;
+    position: absolute;
+    top: 46px;
+    left: 24px;
+}
+.audioCallWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+}
+.subtitle{
+    font-family: 'Noticia Text', serif;
+    margin: 15px 0;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    max-width: 1000px;
+    width: 100%;
+}
+.ansverContainer{
+    text-align: center;
+    font-size: 20px;
+    padding: 30px 0;
+    color: rgba(49, 29, 29, 0.616);
+}
+.ansverIcon{
+    display: block;
+    margin: 0 auto 31px;
+    width: 150px;
+    height: 150px;
+    border-radius: 5px;
+    border: 1px solid rgba(49, 29, 29, 0.2);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+  }
+  .ansverWord{
+    position: relative;
+    display: inline-block;
+    font-weight: bold;
+  }
+  .ansverVolumeButton{
+    position: absolute;
+    left: -10px;
+    top: -4px;
+  }
+  .iconVolumeButton{
+    height: 1.5em;
+    width: 1.5em;
+    color: #a3639e;
+    background-color: rgba(49, 29, 29, 0.2);
+    border-radius: 50%;
+    padding: 0.3em;
+  }
+  .container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+  .content{
+    height: 300px;
+    position: relative;
+    width: 100%;
+  }
+  .volumeContainer{
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+  .volumeIcon{
+    height: 1.5em;
+    width: 1.5em;
+    color: #a3639e;
+    background-color: rgba(49, 29, 29, 0.2);
+    border-radius: 50%;
+    padding: 1em;
+    bottom: 0;
+  }
+  .answersContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+  }
+  .answers{
+    color: rgba(17, 16, 16, 0.616);
+    font-size: 17px;
+    cursor: pointer;
+    transition: 1s;
+    &:hover{
+        transform: scale(1.1);
+        transition: 1s;
+        color: rgba(17, 16, 16, 0.616);
+    }
+  }
+  
+  .answerCorrect{
+    color: #5ab35f;
+    font-weight: bold;
+     &:hover{
+      color: #5ab35f !important;
+    }
+  }
+  .answerUncorrect{
+    color: rgba(240, 9, 9, 0.76);
+    font-weight: bold;
+    text-decoration: line-through;
+     &:hover{
+      text-decoration: line-through;
+      color: rgba(240, 9, 9, 0.76) !important;
+    }
+  }
+  .unselectedWordsStyle{
+    color: rgba(182, 180, 185, 0.521);
+    &:hover{
+     color: rgba(185, 180, 180, 0.527) !important;
+     transform: scale(1);
+    }
+  }
+  .wrongChoisRightWordStyle{
+      color: rgba(17, 17, 16, 0.616);
+      &:hover{
+        color: rgba(17, 16, 16, 0.616) !important;
+      }
+  }
+  .answerNum{
+    margin-right: 5px;
+    width: 30px;
+    display: inline-block;
+    position: relative;
+  }
+  .iconSuccess{
+    font-size: 1em;
+    color: #a5eea9;
+    position: absolute;
+    left: 7px;
+    top: -16px;
+  }
+
+  .notKnow{
+    width: 150px;
+    height: 50px;
+    padding: 10px 40px;
+    &:hover{
+     background-color: rgba(255,255,255,.2);
+    }
+  }
+  
+  .next{
+    width: 150px;
+    height: 50px;
+    padding: 10px 40px;
+     &:hover{
+      background-color: rgba(255,255,255,.2);
+    }
+  }
+  .startGameButton{
+    width: 200px;
+    height: 50px;
+    padding: 10px 40px;
+    margin-top: 20px;
+  }    
+  .sound{
+    width: 40px;
+    height: 40px;
+    background-position: 0;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+    position: absolute;
+    top: 100px;
+    left: 20%;
+    border-radius: 50%;
+    background-color: rgba(49, 29, 29, 0.2);
+  }
+  .volumeSound{
+    background-image: url(../../assets/img/volume.png);
+  }
+  .muteSound{
+    background-image: url(../../assets/img/mute.png);
+  }

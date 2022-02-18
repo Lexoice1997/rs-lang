@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import Typography from "@material-ui/core/Typography";
-import { ChangeEvent, ChangeEventHandler, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerAppType } from "../../redux/store";
 import { createUserWord, deleteDifficaltyWordsId, setAgregateWords, setGroupsAC, setPageAC, setWords, updateWords, WordsType } from "../../redux/wordsReducer";
@@ -15,8 +15,7 @@ import { setIsLoginAC } from "../../redux/userReducer";
 import AudioWordContainer from "../aydioWords/aydioWordsContainer";
 import { useHistory } from "react-router-dom";
 import { SECTIONS_GAME } from "../common/gameConst";
-import { setWordsGame, setWordsUser } from "../../redux/gameReducer";
-import { NamedTupleMember } from "typescript";
+import { setWordsUser } from "../../redux/gameReducer";
 
 
 const BookPage = ()=>{
@@ -31,7 +30,9 @@ const BookPage = ()=>{
     const audio = useRef(new Audio());
     const history = useHistory()
     const pathName = history.location.pathname
-    
+    const learnedWords = (words.filter((el)=>el.userWord?.optional.learned ===true)).length
+    console.log(learnedWords)
+
     let filter = {}
 
     if(isLogin && pathName ==='/textBook'){  
@@ -122,7 +123,8 @@ const BookPage = ()=>{
   }
 
   const onHandlerGame =(e: any)=>{
-  if(e.target.value ==='/audioCallPage'){
+    if(learnedWords===20)return
+    if(e.target.value ==='/audioCallPage'){
     if(isLogin){
       dispatch(setWordsUser(group, page, false))
       history.push(e.target.value)
