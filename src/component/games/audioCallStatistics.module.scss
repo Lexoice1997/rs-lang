@@ -1,0 +1,53 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.word {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 0.5rem;
+}
+.table {
+    width: 100%;
+    max-width: 600px;
+    background-color: rgba(255, 255, 255, 0.801);
+    padding: 30px;
+}
+.subTitle{
+    text-align: start;
+    margin: 10px 0 20px 0;
+}
+.divider{
+    width: 100%;
+    border: 1px solid #a3639e;
+    margin: 10px 0;
+}
+.unCurrentAnswer{
+    color:  rgba(240, 9, 9, 0.849);
+    margin-left: 10px;
+    text-transform: uppercase;
+}
+.currentAnswer{
+    color: #5ab35f;
+    margin-left: 10px;
+    text-transform: uppercase;
+}
+.wordText{
+    color: #b05ec5;
+    font-weight: bold;
+}
+.wordTranslate{
+    color: gray;
+}
+.buttonsContainer {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.statisticsButton{
+    width: 200px;
+    height: 50px;
+}

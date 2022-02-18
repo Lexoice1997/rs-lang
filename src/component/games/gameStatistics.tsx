@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { setWordsGameAC, setWordsUserAC } from "../../redux/gameReducer";
 import { ReducerAppType } from "../../redux/store";
-
+import styles from './audioCallStatistics.module.scss'
 const GameStatistics = ({ statistics, onFinish}:any) => {
     console.log(statistics)
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com' 
@@ -17,20 +17,31 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     const audio = useRef();
     const dispatch = useDispatch();
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
-    // const userId = useSelector<ReducerAppType, string>((state)=>state.user.user.userId)
+    const userId = getUserId()
     const correctWords = statistics.current.words.filter((word:any) => word.correct);
     const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
     const longestWinStrike = statistics.current.longestWinStrike
     const percentCorrectAnswers = Math.round(correctWords.length / (correctWords.length + unCorrectWords.legth) * 100)
-    // const numberOfNewWords = (statistics.current.words.filter((word: any)=> (word.newWord && word.userWord.optional.count===1) || word.newWord && word.userWord.optional.count===0)).length
-    // const learnedWords = (statistics.current.words.filter((word:any)=>word.userWord.optional.learned)).length
-    // console.log(userId)
-    const userId = getUserId()
-    async function putStatistics (){
+    const arrOfNewWords = statistics.current.words.filter((word: any)=> word.newWord).map((word:any)=>word.id??word._id)
+    
+    function newWords(arr:Array<string>): number{
+        let newWordArr: Array<string> = []
+        if(!localStorage.getItem('newWordsArr')){
+            localStorage.setItem('newWordsArr', JSON.stringify(arr));
+        }else if (localStorage.getItem('newWordsArr')){
+            //@ts-ignore
+         const arrFromLocalStorage = JSON.parse(localStorage.getItem('newWordsArr'));
+         newWordArr = arr.filter((n:string) => arrFromLocalStorage.indexOf(n) === -1)
+         localStorage.setItem('newWordsArr', JSON.stringify(arr));
+        }
+        console.log(newWordArr.length)
+        return newWordArr.length
+    }
+    const numberOfNewWords = (statistics.current.words.filter((word: any)=> word.newWord)).length    
+   async function putStatistics (){
        try{
         const dataStatistics = await api.get(`/users/${userId}/statistics`)
-        console.log(dataStatistics)
-        await api.put(`/users/${userId}/statistics`, {"learnedWords": 0, "optional": {
+        await api.put(`/users/${userId}/statistics`, {"learnedWords": dataStatistics.data.learnedWords, "optional": {
             ...dataStatistics.data.optional,
             audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: 0, longestWinStrike: longestWinStrike},
         } })
@@ -39,9 +50,10 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
        }
     }
 
-    useEffect(()=>{
-        putStatistics()
-    }, [])
+    // useEffect(()=>{
+    //     newWords(arrOfNewWords)
+    //     putStatistics()
+    // }, [])
     const onAudioPlay = useCallback((audioPath) => {
         //@ts-ignore
         audio.current?.pause();
@@ -52,33 +64,29 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     }, []);  
 
    const setNewGame =()=>{
-    if(!isLogin){
      dispatch(setWordsGameAC([]))
-     onFinish(false)
-    }else {
-     dispatch(setWordsUserAC ([]))
-     onFinish(false)}   
+     onFinish(false) 
    }
 
     return (
-        <>   
-        <Box component="div" >              
-                <Typography component="h2" variant="h5">
-                    <Typography  component="span">
-                        Знаю: {statistics.current.words.filter((word: any) => word.correct).length}
+        <Box className={styles.container}>   
+        <Box component="div" className={styles.table}>              
+                <Typography component="h2" variant="h5" className={styles.subTitle}>
+                    <Typography  component="span" className={styles.currentAnswer}>
+                        Отвечено верно: {statistics.current.words.filter((word: any) => word.correct).length}
                     </Typography>
                 </Typography>
                 {statistics.current.words
                     .filter((word: any) => word.correct)
                     .map((word: any) => (
-                        <Box  key={(word.id??word._id)}>
+                        <Box key={(word.id??word._id)}>
                             <Word word={word} onAudioPlay={onAudioPlay} />
                         </Box>
                     ))}
-                <Divider variant="middle"  />
-                <Typography  component="h3" variant="h5" gutterBottom>
-                    <Typography component="span" >
-                        Ошибок: {statistics.current.words.filter((word: any) => !word.correct).length}
+                <Box className={styles.divider}/>
+                <Typography className={styles.subTitle}  component="h3" variant="h5" gutterBottom>
+                    <Typography component="span" className={styles.unCurrentAnswer}>
+                        Отвечено не верно: {statistics.current.words.filter((word: any) => !word.correct).length}
                     </Typography>
                 </Typography>
                 {statistics.current.words
@@ -89,27 +97,27 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
                         </Box>
                     ))}
             </Box>
-            <Box >
-                <Button onClick={setNewGame}>играть еще</Button>
-                <Button onClick={()=>history.push('/games')}>к списку игр</Button>
+            <Box className={styles.buttonsContainer}>
+                <Button variant="outlined" className={styles.statisticsButton} onClick={setNewGame}>играть еще</Button>
+                <Button variant="outlined" className={styles.statisticsButton} onClick={()=>history.push('/games')}>к списку игр</Button>
             </Box>
-        </>
+        </Box>
     );
 };
 
 const Word = ({ word, onAudioPlay }: any) => {
     
     return (
-        <Box component="div" >
+        <Box component="div" className={styles.word}>
             <IconButton color="default" onClick={() => onAudioPlay(word.audio)}>
                 <VolumeUpIcon />
             </IconButton>
             <Box component="div">
-                <Box component="span">
+                <Box component="span" className={styles.wordText}>
                     {word.word}
                 </Box>
-                <Box component="span"> - </Box>
-                <Box component="span">
+                <Box component="span" className={styles.wordTranslate}> - </Box>
+                <Box component="span" className={styles.wordTranslate}>
                     {word.wordTranslate}
                 </Box>
             </Box>

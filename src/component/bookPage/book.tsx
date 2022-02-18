@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import Typography from "@material-ui/core/Typography";
-import { ChangeEvent, ChangeEventHandler, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerAppType } from "../../redux/store";
 import { createUserWord, deleteDifficaltyWordsId, setAgregateWords, setGroupsAC, setPageAC, setWords, updateWords, WordsType } from "../../redux/wordsReducer";
@@ -20,8 +20,6 @@ import { NamedTupleMember } from "typescript";
 import { Box, CardActionArea, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
-
-
 const BookPage = ()=>{
 
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
@@ -34,7 +32,9 @@ const BookPage = ()=>{
     const audio = useRef(new Audio());
     const history = useHistory()
     const pathName = history.location.pathname
-    
+    const learnedWords = (words.filter((el)=>el.userWord?.optional.learned ===true)).length
+    console.log(learnedWords)
+
     let filter = {}
 
     if(isLogin && pathName ==='/textBook'){  
@@ -125,7 +125,8 @@ const BookPage = ()=>{
   }
 
   const onHandlerGame =(e: any)=>{
-  if(e.target.value ==='/audioCallPage'){
+    if(learnedWords===20)return
+    if(e.target.value ==='/audioCallPage'){
     if(isLogin){
       dispatch(setWordsUser(group, page, false))
       history.push(e.target.value)
