@@ -114,7 +114,6 @@ export const createNewUser = (username:string, email:string,  password:string)=>
     api.post('https://rs-lang-scorpion.herokuapp.com/users', {username, email, password})
     .then((response)=>{
         localStorage.setItem('user',JSON.stringify(response.data))
-        console.log(response.data)
         dispatch(setUserAC(response.data))
         
     })
@@ -135,9 +134,9 @@ export const logaut = ()=>(dispatch: any)=>{
 export const checkAuthUser = (id: string) => (dispatch: Dispatch<ActionType>) => {
     axios.get(`https://rs-lang-scorpion.herokuapp.com/users/${id}/tokens`,)
         .then((res) => {
-            localStorage.setItem("user", res.data);
+            localStorage.setItem("user", JSON.stringify(res.data));
             dispatch(setUserAC( res.data));
-            
+            setIsLoginAC(true)
         })
         .catch((err) => {
             dispatch(setErrorAC(err.response ? err.response.data : err.message));
