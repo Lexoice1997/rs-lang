@@ -10,6 +10,7 @@ import { useHistory } from "react-router-dom";
 import { setWordsGameAC, setWordsUserAC } from "../../redux/gameReducer";
 import { ReducerAppType } from "../../redux/store";
 import styles from './audioCallStatistics.module.scss'
+import { WordsType } from "../../redux/wordsReducer";
 const GameStatistics = ({ statistics, onFinish}:any) => {
     console.log(statistics)
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com' 
@@ -18,26 +19,14 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     const dispatch = useDispatch();
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
     const userId = getUserId()
+    const newWord = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.game.newWords)
+    console.log(newWord)
     const correctWords = statistics.current.words.filter((word:any) => word.correct);
     const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
     const longestWinStrike = statistics.current.longestWinStrike
     const percentCorrectAnswers = Math.round(correctWords.length / (correctWords.length + unCorrectWords.legth) * 100)
     const arrOfNewWords = statistics.current.words.filter((word: any)=> word.newWord).map((word:any)=>word.id??word._id)
-    
-    function newWords(arr:Array<string>): number{
-        let newWordArr: Array<string> = []
-        if(!localStorage.getItem('newWordsArr')){
-            localStorage.setItem('newWordsArr', JSON.stringify(arr));
-        }else if (localStorage.getItem('newWordsArr')){
-            //@ts-ignore
-         const arrFromLocalStorage = JSON.parse(localStorage.getItem('newWordsArr'));
-         newWordArr = arr.filter((n:string) => arrFromLocalStorage.indexOf(n) === -1)
-         localStorage.setItem('newWordsArr', JSON.stringify(arr));
-        }
-        console.log(newWordArr.length)
-        return newWordArr.length
-    }
-    const numberOfNewWords = (statistics.current.words.filter((word: any)=> word.newWord)).length    
+     
    async function putStatistics (){
        try{
         const dataStatistics = await api.get(`/users/${userId}/statistics`)

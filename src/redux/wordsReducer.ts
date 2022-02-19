@@ -18,7 +18,7 @@ export const CREATE_USER_WORD = 'CREATE_USER_WORD'
 
 export type UserWordType = {
     difficulty: string,
-    optional: {learned?: boolean, count?: number, correct?: boolean, uncoreect?: boolean}
+    optional: {learned?: boolean, count?: number, correct?: number, uncorrect?: number}
 }
 
 export type AgregatedResultsArrType = {
@@ -259,7 +259,7 @@ export const setWords = (group: number, page: number) => (dispatch: Dispatch<Act
 
 export const setAgregateWords = (group: number, page: number, filter: any) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
     const userId=getState().user.user.userId
-    const wordsPerPage: number = 20
+    const wordsPerPage: number = 3600
     api.get(`/users/${userId}/aggregatedWords`, {params: {
          wordsPerPage, filter
     }})

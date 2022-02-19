@@ -18,7 +18,7 @@ api.interceptors.response.use(
         return config
     },
     async (error) => {
-        
+       if(getUserId()===null || getUserId()===undefined) return
         let id = getUserId()
         const originalRequest = error.config
         console.log(error.config._isRetry)

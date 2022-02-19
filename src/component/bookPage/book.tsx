@@ -136,6 +136,7 @@ const BookPage = ()=>{
     }
    }
   }
+  console.log(words[0])
     return (
         <div className={styles.bookPage}>
             {pathName==='/vocabulary' ? <h1>Сложные слова</h1> : <h1>Учебник</h1>}
@@ -198,6 +199,7 @@ const BookPage = ()=>{
             words.length === 0
               ? <Typography component="h5" variant="h5">Не найдено слов</Typography>
               : words.map(word => (
+
                 <Grid key={word._id} item xs={12} sm={6} md={4}>
                   <Card className={styles.card}>
                     <CardActionArea>
@@ -237,14 +239,14 @@ const BookPage = ()=>{
                                 <Button size="small" variant="contained" color="secondary" className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}>сложные</Button>
                                 <Button size="small" variant="contained" color="primary" className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}>изученные</Button>
                                 <div>
-                                  0 / 0
+                                 <span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span> 
                                 </div>
                               </> 
                             : (isLogin && pathName ==='/vocabulary' ) 
                             ? <>
                                 <Button size="small" variant="contained" color="secondary" onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</Button>
                                 <Button size="small" variant="contained" color="primary" onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}>в изученные слова</Button>
-                                <div>0 / 0</div>
+                                <div><span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span> </div>
                               </>
                               
                             : ''

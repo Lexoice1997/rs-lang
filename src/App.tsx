@@ -9,20 +9,19 @@ import { withRouter, useHistory} from 'react-router-dom';
 import { getUserId } from './api/api';
 import Header from './component/header/header';
 import NavBar from './component/navBar/navBar';
-import { checkAuthUser } from './redux/userReducer';
 import { Route } from 'react-router-dom';
 import SprintGame from './component/games/sprint-game/sprintGame';
 
 const App=(props: any) => {
   const dispatch = useDispatch(); 
-  const histiry = useHistory()
+  const history = useHistory()
 
-  useEffect(() => {
-    const userId = getUserId()
-    if (userId) {
-        dispatch(checkAuthUser(userId));
-    }
-}, []);
+//   useEffect(() => {
+//     const userId = getUserId()
+//     if (!userId) {
+//       history.push('')
+//     }
+// }, []);
 
   return (
     <div className="App">

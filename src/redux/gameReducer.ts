@@ -5,8 +5,10 @@ import {WordsType } from "./wordsReducer";
 export const SET_GAME_WORDS = 'SET_GAME_WORDS';
 export const SET_ERROR_GAME='SET_ERROR_GAME' 
 export const SET_USER_WORDS='SET_USER_WORDS'
+export const SET_NEW_WORDS = 'SET_NEW_WORDS'
 
 export type InitialStateGameType = {
+    newWords: Array<WordsType>
     wordsList: Array<WordsType>
     error: string
 }
@@ -19,10 +21,11 @@ export type ActionType =
 
 
 const initialState:InitialStateGameType = {
+    newWords:[],
     wordsList:  [],
     error: '', 
 };
-
+console.log(initialState.newWords)
 const GameReducer = (state=initialState, action:any): InitialStateGameType=>{
    switch (action.type) {
     case SET_GAME_WORDS:{ 
@@ -33,7 +36,16 @@ const GameReducer = (state=initialState, action:any): InitialStateGameType=>{
     }   
     case SET_USER_WORDS:{
         return{...state, wordsList: action.data}
-    }        
+    }
+    // case SET_NEW_WORDS:{
+    //         //@ts-ignore
+    //     return {...state, newWords: state.newWords.map((w)=>{
+    //         if(w._id!==action.word._id){
+    //            return state.wordsList.push(action.word)
+    //         } else return state.newWords.push(action.word)
+    //     })
+      
+    // } }    
     default: return state
    }
 };
@@ -102,6 +114,12 @@ export const setWordsUser = (group: number, page: number, learned: boolean) => (
             
         })
     }          
+}
+export const setNewWordsAC = (word:WordsType )=>{
+    return {
+        type: SET_NEW_WORDS,
+        word
+    }
 }
 export const setWordsUserAC = (data: Array<WordsType>)=>{
     return{
