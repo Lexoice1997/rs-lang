@@ -97,9 +97,8 @@ export const loginUser = (email: string, password: string)=>(dispatch:Dispatch<A
     api.post('/signin', {email, password})
     .then((response)=>{
         localStorage.setItem('user', JSON.stringify(response.data))
-        console.log(response.data)
         dispatch(setUserAC(response.data))
-        
+        dispatch(setIsLoginAC(true))
     })
     .catch((err)=>{
         dispatch(setErrorAC(err.response ? err.response.data : err.message))
@@ -128,7 +127,7 @@ export const createNewUser = (username:string, email:string,  password:string)=>
 export const logaut = ()=>(dispatch: any)=>{
     localStorage.removeItem("user");
     dispatch(setUserAC({}));
-    
+    dispatch(setIsLoginAC(false))
 }
 
 // export const checkAuthUser = (id: string) => (dispatch: Dispatch<ActionType>) => {
