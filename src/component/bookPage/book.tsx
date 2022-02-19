@@ -16,10 +16,10 @@ import AudioWordContainer from "../aydioWords/aydioWordsContainer";
 import { useHistory } from "react-router-dom";
 import { SECTIONS_GAME } from "../common/gameConst";
 import { setWordsGame, setWordsUser } from "../../redux/gameReducer";
-import { NamedTupleMember } from "typescript";
 import { Box, CardActionArea, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
+import Preloader from "../preloader/preloader";
 const BookPage = ()=>{
 
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
@@ -33,8 +33,8 @@ const BookPage = ()=>{
     const history = useHistory()
     const pathName = history.location.pathname
     const learnedWords = (words.filter((el)=>el.userWord?.optional.learned ===true)).length
-    console.log(learnedWords)
-
+    const isLoading = useSelector<ReducerAppType, boolean>((state) => state.words.isLoading)
+    
     let filter = {}
 
     if(isLogin && pathName ==='/textBook'){  
@@ -53,7 +53,7 @@ const BookPage = ()=>{
         dispatch(setAgregateWords( group, page, filter)) 
       } else {dispatch(setWords(group, page))}
 
-    }, [group, page])
+    }, [group, page, isLogin])
 
     useEffect(() => {
         //@ts-ignore 
@@ -136,12 +136,11 @@ const BookPage = ()=>{
     }
    }
   }
-  console.log(words[0])
     return (
-        <div className={styles.bookPage}>
+      <>
+        {isLoading ? <Preloader/> :<div className={styles.bookPage}>
             {pathName==='/vocabulary' ? <h1>Сложные слова</h1> : <h1>Учебник</h1>}
-            <div className={styles.header}>
-
+            {pathName==='/textBook' ? <div className={styles.header}>
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth>
               <InputLabel id="section-select-label">Раздел</InputLabel>
@@ -152,7 +151,7 @@ const BookPage = ()=>{
                   label="Group"
                   onChange={onHandlerGroup}
                 >
-                  {SECTIONS_WORDS.map(g=> <MenuItem key={g.group} value={g.group}>{g.name}</MenuItem>)}
+                  {SECTIONS_WORDS.map(g=> <MenuItem  style={{ backgroundColor: `${g.backgroundBtn}`}} key={g.group} value={g.group}>{g.name}</MenuItem>)}
                 </Select>
               </FormControl>
             </Box>
@@ -189,8 +188,7 @@ const BookPage = ()=>{
                 </Select>
               </FormControl>
             </Box>
-        
-             </div>
+        </div> : ''}
 
             
         <Grid container>
@@ -198,9 +196,9 @@ const BookPage = ()=>{
           : 
             words.length === 0
               ? <Typography component="h5" variant="h5">Не найдено слов</Typography>
-              : words.map(word => (
+              : words.map((word,ind) => (
 
-                <Grid key={word._id} item xs={12} sm={6} md={4}>
+                <Grid key={ind} item xs={12} sm={6} md={4}>
                   <Card className={styles.card}>
                     <CardActionArea>
                       <CardMedia
@@ -236,17 +234,32 @@ const BookPage = ()=>{
                           {
                             (isLogin && pathName ==='/textBook')
                             ? <>
-                                <Button size="small" variant="contained" color="secondary" className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}>сложные</Button>
-                                <Button size="small" variant="contained" color="primary" className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}>изученные</Button>
-                                <div>
+                                <button 
+                                 
+                                className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } 
+                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
+                                onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}
+                                >сложные</button>
+                                <button 
+                               
+                                className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} 
+                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
+                                onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}
+                                >изученные</button>
+                            
                                  <span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span> 
-                                </div>
+                                
                               </> 
                             : (isLogin && pathName ==='/vocabulary' ) 
                             ? <>
-                                <Button size="small" variant="contained" color="secondary" onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</Button>
-                                <Button size="small" variant="contained" color="primary" onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}>в изученные слова</Button>
-                                <div><span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span> </div>
+                                <button 
+          
+                                onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</button>
+                                <button 
+                                 
+                                onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}
+                                >в изученные слова</button>
+                                <span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span>
                               </>
                               
                             : ''
@@ -259,7 +272,8 @@ const BookPage = ()=>{
               ))
           }
        </Grid>
-      </div>
+      </div>}
+      </>
     );
    
 };

@@ -28,7 +28,7 @@ api.interceptors.response.use(
             try {
                 const response = await api.get(`/users/${id}/tokens`)
                 localStorage.setItem("user", JSON.stringify(response.data))
-                axios.defaults.headers.common['Authorization'] = 'Bearer ' + getMeRefreshToken()
+                axios.defaults.headers.common['Authorization'] = 'Bearer ' + getMeToken()
                 return api.request(originalRequest)
             } catch (e) {
                 console.log(e)

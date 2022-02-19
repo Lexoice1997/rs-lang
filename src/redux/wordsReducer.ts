@@ -13,8 +13,9 @@ export const WORD_PLAYING = 'WORD_PLAYING'
 export const DELETE_DIFFICALTY_WORDS = 'DELETE_DIFFICALTY_WORDS'
 export const CREATE_LEARNED_WORDS = 'CREATE_LEARNED_WORDS'
 export const DELETE_LEARNED_WORDS = 'DELETE_LEARNED_WORDS'
-export const CREATE_USER_GAME_WARD = 'CREATE_USER_GAME_WARD,'
+export const CREATE_USER_GAME_WORD = 'CREATE_USER_GAME_WORD,'
 export const CREATE_USER_WORD = 'CREATE_USER_WORD'
+export const SET_LOADING_WORD = 'SET_LOADING_WORD'
 
 export type UserWordType = {
     difficulty: string,
@@ -84,7 +85,7 @@ export type ActionType =
 | ReturnType<typeof updateWordsAC> 
 | ReturnType<typeof createUserGameWordAC> 
 | ReturnType<typeof createUserWordAC> 
-
+| ReturnType<typeof setLoadingWordAC> 
 
 
 const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsType=>{
@@ -116,11 +117,6 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
                         : el.userWord } 
                     : el
                       )
-            //     words: state.words.map(el=>{
-            //     if((el._id??el.id)===action.word._id){
-            //         return{...el, userWord:{...el.userWord, difficulty: action.difficulty, optional: action.optional}}
-            //     } return el
-            // })
         }
         }
         case DELETE_DIFFICALTY_WORDS:{
@@ -130,7 +126,7 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         case SET_DIFFICALTY_WORDS: {
             return {...state, words: action.data }
         }
-        case CREATE_USER_GAME_WARD:{
+        case CREATE_USER_GAME_WORD:{
             //@ts-ignore
             return {...state, words: state.words.map(el=>{
                 if((el._id??el.id)===(action.word._id ?? action.word.id)){
@@ -148,13 +144,16 @@ const WordsReducer = (state=initialState, action:ActionType):InitialStateWordsTy
         }
         case WORD_PLAYING:{
             return {...state, wordPlaying: action.wordId}
+        }
+        case SET_LOADING_WORD: {
+            return {...state, isLoading: action.loading}
         }    
        default: {
            return state
        }
    }
 };
-
+//action creator
 const setWordsAC =(data: Array<WordsType>)=>{
     return{
         type: SET_WORDS,
@@ -206,7 +205,7 @@ export const setWordPlayingAC = (wordId: string| null) => {
 
   export const createUserGameWordAC = (word: WordsType, optional:any)=>{
     return {
-        type: CREATE_USER_GAME_WARD,
+        type: CREATE_USER_GAME_WORD,
         word,
         optional
     }as const
@@ -219,6 +218,21 @@ export const setWordPlayingAC = (wordId: string| null) => {
         optional
     } as const
   }
+const setLoadingWordAC=(loading:boolean)=>{
+    return{
+        type: SET_LOADING_WORD,
+        loading
+    }as const
+}
+export const createUserWordAC = (word: WordsType,difficulty?: string, optional?: {})=>{
+    return{
+        type: CREATE_USER_WORD,
+        word,
+        difficulty,
+        optional 
+    }as const
+}
+//thunc
 
 export const updateWords = (word: WordsType, difficulty: string | undefined | null, optional: {} | undefined)=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType): void=>{
     const userId=getState().user.user.userId
@@ -244,32 +258,39 @@ export const updateWords = (word: WordsType, difficulty: string | undefined | nu
 
 export const setWords = (group: number, page: number) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
     const {group, page} = getState().words
-    dispatch(loadingAC(true))
+    dispatch(setLoadingWordAC(true))
     api.get(`/words?group=${group}&page=${page}`)
     .then(res=>{
         dispatch(setWordsAC(res.data))
         dispatch(setGroupsAC(group))
         dispatch(setPageAC(page))
-        dispatch(loadingAC(false))
+        dispatch(setLoadingWordAC(false))
     })
     .catch(err=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
+    })
+    .finally(()=>{
+        dispatch(setLoadingWordAC(false))
     })
 }
 
 export const setAgregateWords = (group: number, page: number, filter: any) => (dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void => {
     const userId=getState().user.user.userId
     const wordsPerPage: number = 3600
+    dispatch(setLoadingWordAC(true))
     api.get(`/users/${userId}/aggregatedWords`, {params: {
          wordsPerPage, filter
     }})
     .then(res=>{      
          dispatch(setAgregatedWordsAC(res.data[0].paginatedResults))
+         dispatch(setLoadingWordAC(true))
     })
     .catch(err=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
     })
-   
+    .finally(()=>{
+        dispatch(setLoadingWordAC(false))
+    })
 }
 
 export const deleteDifficaltyWordsId = (word: WordsType)=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType): void=>{
@@ -294,15 +315,6 @@ export const createUserGameWord = (word: WordsType, optional?:{})=>(dispatch:Dis
     .catch(err=>{
         dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))   
      })
-}
-
-export const createUserWordAC = (word: WordsType,difficulty?: string, optional?: {})=>{
-    return{
-        type: CREATE_USER_WORD,
-        word,
-        difficulty,
-        optional 
-    }as const
 }
 
 export const createUserWord = (word: WordsType, difficulty?: string,   optional?: {})=>(dispatch: Dispatch<ActionType>, getState:  () => ReducerAppType):void=>{
