@@ -19,30 +19,33 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     const dispatch = useDispatch();
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
     const userId = getUserId()
-    const newWord = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.game.newWords)
-    console.log(newWord)
+    const numberOfNewWords = JSON.parse(localStorage.getItem('arr') || '[]')
+    
     const correctWords = statistics.current.words.filter((word:any) => word.correct);
     const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
     const longestWinStrike = statistics.current.longestWinStrike
     const percentCorrectAnswers = Math.round(correctWords.length / (correctWords.length + unCorrectWords.legth) * 100)
-    const arrOfNewWords = statistics.current.words.filter((word: any)=> word.newWord).map((word:any)=>word.id??word._id)
-     
+   
    async function putStatistics (){
        try{
         const dataStatistics = await api.get(`/users/${userId}/statistics`)
-        await api.put(`/users/${userId}/statistics`, {"learnedWords": dataStatistics.data.learnedWords, "optional": {
-            ...dataStatistics.data.optional,
-            audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: 0, longestWinStrike: longestWinStrike},
+        .catch((err)=>{})
+        await api.put(`/users/${userId}/statistics`, {"learnedWords": dataStatistics?.data?.learnedWords, "optional": {
+            ...dataStatistics?.data?.optional,
+            audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: numberOfNewWords, longestWinStrike: longestWinStrike},
         } })
        } catch(err){
         console.log(err)
        }
     }
-
-    // useEffect(()=>{
-    //     newWords(arrOfNewWords)
-    //     putStatistics()
-    // }, [])
+   
+     useEffect(()=>{
+      if(isLogin) putStatistics()
+     }, [])
+    
+    
+    
+    
     const onAudioPlay = useCallback((audioPath) => {
         //@ts-ignore
         audio.current?.pause();
