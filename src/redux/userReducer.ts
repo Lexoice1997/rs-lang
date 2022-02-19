@@ -131,17 +131,17 @@ export const logaut = ()=>(dispatch: any)=>{
     
 }
 
-export const checkAuthUser = (id: string) => (dispatch: Dispatch<ActionType>) => {
-    axios.get(`https://rs-lang-scorpion.herokuapp.com/users/${id}/tokens`,)
-        .then((res) => {
-            localStorage.setItem("user", JSON.stringify(res.data));
-            dispatch(setUserAC( res.data));
-            setIsLoginAC(true)
-        })
-        .catch((err) => {
-            dispatch(setErrorAC(err.response ? err.response.data : err.message));
-        });
-};
+// export const checkAuthUser = (id: string) => (dispatch: Dispatch<ActionType>) => {
+//     axios.get(`https://rs-lang-scorpion.herokuapp.com/users/${id}/tokens`,)
+//         .then((res) => {
+//             localStorage.setItem("user", JSON.stringify(res.data));
+//             dispatch(setUserAC( res.data));
+//             setIsLoginAC(true)
+//         })
+//         .catch((err) => {
+//             dispatch(setErrorAC(err.response ? err.response.data : err.message));
+//         });
+// };
 
 
 export default UserReducer;

@@ -22,7 +22,8 @@ const AudioCallPage = () => {
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin);
     const onStartHandler = (group:number, page:number)=>{
         if(isLogin){
-            dispatch(setWordsUser(group, page, true))      
+            dispatch(setWordsUser(group, page, true))  
+                
         }else dispatch(setWordsGame(group, page))
     }
 
