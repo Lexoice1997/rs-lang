@@ -1,17 +1,23 @@
 import { WordsType } from "../redux/wordsReducer";
+import {SET_USER_WORDS} from "../redux/gameReducer";
 
 export interface Word {
   originWord?: string;
   translateWord?: string;
   originWordId?: string;
   translateWordId?: string;
-  audio?: string
+  audio?: string;
+  word?: WordsType;
 }
 
 export interface ResultWord {
+  id?: string,
+  _id?: string,
   origin?: string;
   translate?: string;
   audio?: string;
+  result?: boolean;
+  word?: WordsType
 }
 
 export interface SprintState {
@@ -26,6 +32,10 @@ export interface SprintState {
   correctAnswer: Array<ResultWord>;
   incorrectAnswer: Array<ResultWord>;
   longestWinStrike: number;
+  page: number;
+  group: any;
+  option: any;
+  newWords: number;
 }
 export enum SprintActionTypes {
   FETCH_WORDS = 'FETCH_WORDS',
@@ -38,8 +48,13 @@ export enum SprintActionTypes {
   SET_INCORRECT_ANSWER = 'SET_INCORRECT_ANSWER',
   RESET_DATA = 'RESET_DATA',
   SET_LONGEST_WINSTRIKE = 'SET_LONGEST_WINSTRIKE',
+  SET_PAGE = 'SET_PAGE',
+  SET_GROUP = 'SET_GROUP',
+  SET_OPTION = 'SET_OPTION',
+  SET_USER_WORDS = 'SET_USER_WORDS',
+  SET_NEW_WORDS = 'SET_NEW_WORDS',
   FETCH_WORDS_SUCCESS = 'FETCH_WORDS_SUCCESS',
-  FETCH_WORDS_ERROR = 'FETCH_WORDS_ERROR'
+  FETCH_WORDS_ERROR = 'FETCH_WORDS_ERROR',
 }
 
 interface FetchWordsAction {
@@ -90,6 +105,31 @@ interface SetLongestWinStrike {
   payload: number;
 }
 
+interface SetPage {
+  type: SprintActionTypes.SET_PAGE;
+  payload: number;
+}
+
+interface SetGroup {
+  type: SprintActionTypes.SET_GROUP;
+  payload: any;
+}
+
+interface SetOption {
+  type: SprintActionTypes.SET_OPTION;
+  payload: any;
+}
+
+interface SetUserWordsSprint {
+  type: SprintActionTypes.SET_USER_WORDS;
+  payload: any;
+}
+
+interface SetNewWords {
+  type: SprintActionTypes.SET_NEW_WORDS;
+  payload: number;
+}
+
 interface FetchWordsSuccessAction {
   type: SprintActionTypes.FETCH_WORDS_SUCCESS;
   payload: Array<WordsType>
@@ -100,9 +140,9 @@ interface FetchWordsErrorAction {
   payload: string;
 }
 
-export type SprintAction = FetchWordsAction 
-                          | FetchWordsSuccessAction 
-                          | FetchWordsErrorAction 
+export type SprintAction = FetchWordsAction
+                          | FetchWordsSuccessAction
+                          | FetchWordsErrorAction
                           | SetWordAction
                           | SetTotalScore
                           | SetWinstrikeScore
@@ -111,4 +151,9 @@ export type SprintAction = FetchWordsAction
                           | SetCorrectAnswer
                           | SetIncorrectAnswer
                           | ResetData
-                          | SetLongestWinStrike;
+                          | SetLongestWinStrike
+                          | SetPage
+                          | SetGroup
+                          | SetOption
+                          | SetUserWordsSprint
+                          | SetNewWords;

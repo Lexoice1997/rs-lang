@@ -1,18 +1,53 @@
 import axios from 'axios';
-import { Dispatch } from 'react';
-import { getRandomInt } from '../../js';
-import { ResultWord, SprintAction, SprintActionTypes } from '../../types/sprint';
+import {Dispatch} from 'react';
+import {ResultWord, SprintAction, SprintActionTypes} from '../../types/sprint';
+import api, {getUserId} from "../../api/api";
 
-export const fetchWords = (group: any) => {
-  const page1: string = String(getRandomInt(0, 15))
-  const page2: string = String(getRandomInt(15, 29))
-  
+export const fetchWords = (group: any, page: any) => {
+  const userId = getUserId()
+
   return async (dispatch: Dispatch<SprintAction>) => {
     try {
       dispatch({type: SprintActionTypes.FETCH_WORDS})
-      const response1 = await axios.get(`https://rs-lang-scorpion.herokuapp.com/words?group=${group.title}&page=${page1}`)
-      const response2 = await axios.get(`https://rs-lang-scorpion.herokuapp.com/words?group=${group.title}&page=${page2}`)
-      dispatch({type: SprintActionTypes.FETCH_WORDS_SUCCESS, payload: [...response1.data, ...response2.data]})
+      const response1 = await axios.get(`https://rs-lang-scorpion.herokuapp.com/words?group=${group}&page=${page}`)
+      const optionResponse =  await api.get(`/users/${userId}/words`);
+      dispatch({type: SprintActionTypes.FETCH_WORDS_SUCCESS, payload: response1.data})
+      dispatch({type: SprintActionTypes.SET_OPTION, payload: optionResponse.data})
+    } catch(e) {
+      dispatch({
+        type: SprintActionTypes.FETCH_WORDS_ERROR,
+        payload: "Произошла ошибка при загрузке пользователя"
+      })
+    }
+  }
+}
+
+export const fetchWordsAgreggate = (group: any, page: any, learned: boolean) => {
+  const userId = getUserId()
+  let wordsPerPage: number = 20;
+
+  let filter = {
+    "$and": [
+      {
+        "$or": [
+          {"userWord.optional.learned": learned},
+          {"userWord.difficulty": "hard"},
+          {"userWord": null}
+        ]
+      },
+      {"page": +group}, {"group": +page}
+    ]
+  }
+
+  return async (dispatch: Dispatch<SprintAction>) => {
+    try {
+      dispatch({type: SprintActionTypes.FETCH_WORDS})
+      const response1 = await api.get(`/users/${userId}/aggregatedWords`, {
+        params: {
+          wordsPerPage, filter
+        }
+      })
+      dispatch({type: SprintActionTypes.SET_USER_WORDS, payload: response1.data[0].paginatedResults})
     } catch(e) {
       dispatch({
         type: SprintActionTypes.FETCH_WORDS_ERROR,
@@ -23,12 +58,13 @@ export const fetchWords = (group: any) => {
 }
 
 export const setWord = (words: any, indexOriginWord: number, indexTranslateWord: number): SprintAction => {
-  return {type: SprintActionTypes.SET_WORD, payload: 
-                                            {originWord: words[indexOriginWord].word, 
+  return {type: SprintActionTypes.SET_WORD, payload:
+                                            {originWord: words[indexOriginWord].word,
                                             translateWord: words[indexTranslateWord].wordTranslate,
-                                            originWordId: words[indexOriginWord].id,
-                                            translateWordId: words[indexTranslateWord].id,
-                                            audio: words[indexOriginWord].audio }}
+                                            originWordId: (words[indexOriginWord].id ?? words[indexOriginWord]._id),
+                                            translateWordId: (words[indexTranslateWord].id ?? words[indexTranslateWord]._id),
+                                            audio: words[indexOriginWord].audio,
+                                            word: words[indexOriginWord]}}
 }
 
 export const setTotalScore = (score: number): SprintAction => {
@@ -70,4 +106,8 @@ export const resetData = (): SprintAction => {
 
 export const setLongestWinStrike = (longestWinStrike: number): SprintAction => {
   return {type: SprintActionTypes.SET_LONGEST_WINSTRIKE, payload: longestWinStrike}
+}
+
+export const setNewWords = (count: number): SprintAction => {
+  return {type: SprintActionTypes.SET_NEW_WORDS, payload: count}
 }

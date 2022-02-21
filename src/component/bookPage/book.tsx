@@ -18,13 +18,15 @@ import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissa
 import styles from './boocPage.module.scss'
 import { setIsLoginAC } from "../../redux/userReducer";
 import AudioWordContainer from "../aydioWords/aydioWordsContainer";
-import { useHistory } from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import { SECTIONS_GAME } from "../common/gameConst";
 import { setWordsGame, setWordsUser } from "../../redux/gameReducer";
 import { Box, CardActionArea, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import Preloader from "../preloader/preloader";
+import {useActions} from "../../hooks/useSprint";
+import {SPRINT_GAME} from "../routs";
 import api, { getUserId } from "../../api/api";
 const BookPage = () => {
 
@@ -106,21 +108,20 @@ const BookPage = () => {
     dispatch(setPageAC(+e.target.value))
   }
 
+
   const onHandlerNextPage = () => {
     if (page === 29) return
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = page + 1
     localStorage.setItem('page', JSON.stringify(valuePage))
     dispatch(setPageAC(page + 1))
-
   }
-
   const onHandlerPrevPage = () => {
     if (page === 0) return
-
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = page - 1
     localStorage.setItem('page', JSON.stringify(valuePage))
+
     dispatch(setPageAC(page - 1))
   }
   const onHandlerCreateDifficaltWord = (word: WordsType, difficult: string, optional: {}) => {
@@ -148,7 +149,6 @@ const BookPage = () => {
     setTimeout(() => {
       dispatch(createUserWord(word, difficulty, optional))
     }, 500);
-
   }
 
 
@@ -199,11 +199,17 @@ const BookPage = () => {
                   label="Page"
                   onChange={onHandlerPage}
                 >
+                  <MenuItem value='/audioCallPage'>Аудиовызов</MenuItem>
+                  <MenuItem><Link to={{
+                    pathname:`${SPRINT_GAME}`,
+                    state: {group: `${group}`, page: `${page}`, learned: true}
+                  }}>Спринт</Link></MenuItem>
+
+                {/*{SECTIONS_GAME.map((g, i) => <MenuItem  key={g.name} value={g.url}>{g.name}</MenuItem>)}*/}
                   {pages.map((p, i) => <MenuItem key={i} value={p}>{p + 1}</MenuItem>)}
                 </Select>
               </FormControl>
             </Box>
-
             <Button variant="contained" onClick={onHandlerNextPage}>next</Button>
           </>
           <Box sx={{ minWidth: 120 }}>
@@ -324,7 +330,6 @@ const BookPage = () => {
       </div>}
     </>
   );
-
 };
 
 

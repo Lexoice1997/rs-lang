@@ -2,10 +2,13 @@ import styles from "./statistics.module.scss";
 import { Check, CheckCircle, DoneAll } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import api, { getUserId } from "../../api/api";
+import {useTypedSelector} from "../../hooks/useTypedSelector";
 
 const StatistiksPage = () => {
   const [data, setData] = useState<any>();
   const userId = getUserId();
+
+  const {newWords} = useTypedSelector(state => state.sprintGame);
 
   async function getStatistics() {
     const response = await api.get(`/users/${userId}/statistics`);
@@ -14,9 +17,7 @@ const StatistiksPage = () => {
 
   useEffect(() => {
     getStatistics()
-    
   }, [])
-  console.log(data)
 
   return (
     <div className={styles.statisticsPage}>
@@ -24,27 +25,152 @@ const StatistiksPage = () => {
 
       <div className={styles.statisticsToday}>
         <h3><b>0</b>слов изучено</h3>
-        <h3><b>0%</b>правильных ответов</h3>
       </div>
 
       <div className={styles.gameStatistics}>
         <div className={styles.gameCard}>
           <h3>Спринт</h3>
-          <h4><Check/>Изучено {data && data.optional.sprintGame.numberOfNewWords} слов.</h4>
-          <h4><CheckCircle/>Правильных ответов: {data && data.optional.sprintGame.percentCorrectAnswers}%.</h4>
-          <h4><DoneAll/>Самая длинная серия правильных ответов: {data && data.optional.sprintGame.longestWinStrike}.</h4>
+          <h4><Check/>Изучено {(data && data.optional.sprintGame.numberOfNewWords) && 0} слов.</h4>
+          <h4><CheckCircle/>Правильных ответов: {(data && data.optional.sprintGame.percentCorrectAnswers) && 0}%.</h4>
+          <h4><DoneAll/>Самая длинная серия правильных ответов: {(data && data.optional.sprintGame.longestWinStrike) && 0}.</h4>
         </div>
 
         <div className={styles.gameCard}>
           <h3>Аудиовызов</h3>
-          <h4><Check/>Изучего 0 слов.</h4>
-          <h4><CheckCircle/>Правильных ответов: 0%.</h4>
-          <h4><DoneAll/>Самая длинная серия правильных ответов: 0.</h4>
+          <h4><Check/>Изучено {(data && data.optional.sprintGame.numberOfNewWords) && 0} слов.</h4>
+          <h4><CheckCircle/>Правильных ответов: {(data && data.optional.sprintGame.numberOfNewWords) && 0}%.</h4>
+          <h4><DoneAll/>Самая длинная серия правильных ответов: {(data && data.optional.sprintGame.numberOfNewWords) && 0}.</h4>
         </div>
       </div>
     </div>
   )
 };
 
+export default  StatistiksPage;
 
-export default  StatistiksPage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//
+// const statistics = {
+//   learnedWords: 120,
+//
+//   optional: {
+//     sprintGame: {
+//       percentCorrectAnswers: 20,
+//       numberOfNewWords: 10,
+//       longestWinStrike: 10,
+//     },
+//
+//     audioCallGame: {
+//       percentCorrectAnswers: 20,
+//       numberOfNewWords: 10,
+//       longestWinStrike: 10,
+//     },
+//
+//     newWords: {
+//       mother: true,
+//       father: true,
+//       brother: true
+//     },
+//
+//     playedWords: {
+//       mother: {correct: 1, incorrect: 2},
+//       father: {correct: 2, incorrect: 0},
+//       brother: {correct: 0, incorrect: 1}
+//     }
+//   }
+// }
+//
+//
+// // после окончание игры
+//
+// const correctWords = [...]       // отгаданные слова
+// const incorrectWords = [...]     // не отгаданные слова
+//
+// const statisticsData = api.get(`/users/{id}/statistics`); // берем сам объект с бекенда
+//
+//
+// correctWords.forEach(word => {
+//   if (statisticsData.optional.playedWords.hasOwnProperty(word)) { // если уже существует слова то прибавляем +1
+//     const word = statisticsData.optional.playedWords.word;
+//     word.correct = word.correct + 1
+//   } else {
+//     statisticsData.optional.playedWords.word = 1 //если не существует то создаем и даём значение + 1
+//   }
+// })
+//
+// //тут также как и правильные слова
+// incorrectWords.forEach(word => {
+//   if (statisticsData.optional.playedWords.hasOwnProperty(word)) {
+//     const word = statisticsData.optional.playedWords.word;
+//     word.correct = word.correct + 1
+//   } else {
+//     statisticsData.optional.playedWords.word = 1
+//   }
+// })
+//
+//
+// // это массив новые слова
+// const newWords = correctWords.map(word => {
+//   if (!statisticsData.optional.newWords.hasOwnProperty(word)) { // если не существует это слова в объекте newWords, то туда дабавлеям слова с значением true
+//     statisticsData.optional.newWords.word = true;
+//
+//     return word;
+//   }
+// })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
