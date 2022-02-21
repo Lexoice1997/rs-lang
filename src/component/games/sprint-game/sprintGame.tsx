@@ -12,12 +12,21 @@ import { NavLink } from 'react-router-dom';
 import correctSound from '../../../assets/audio/correct.mp3';
 //@ts-ignore
 import errorSound from '../../../assets/audio/error.mp3';
+import {getUserId} from "../../../api/api";
+
+import {useSelector} from "react-redux";
+import {ReducerAppType} from "../../../redux/store";
+import {WordsType} from "../../../redux/wordsReducer";
 
 const SprintGame: React.FC = () => {
   let location = useLocation();
   let [time, setTime] = useState(60);
+  const [newWords, setNewWords] = useState<number>(0);
   const [volume, setVolume] = useState(false);
-  const [longestStrike, setLongestStrike] = useState(0);
+  const [longestStrike, setLongestStrike] = useState<number>(0);
+  const [indexWord, setIndexWord] = useState(0)
+  const isLogin = useSelector<ReducerAppType, boolean>((state) => state.user.isLogin);
+
   const {
         fetchWords,
         setWord,
@@ -29,6 +38,7 @@ const SprintGame: React.FC = () => {
         setIncorrectAnswer,
         resetData,
         setLongestWinStrike,
+        fetchWordsAgreggate,
       } = useActions()
 
   const {
@@ -40,19 +50,29 @@ const SprintGame: React.FC = () => {
         winStrikeScore,
         winStrike,
         longestWinStrike,
-        bird,
+        bird
       } = useTypedSelector(state => state.sprintGame);
 
-  function setQuestion() {
-    const origin = getRandomInt(0, 19);
-    const translate = getRandomInt(0, 19);
-    const middle = getRandomInt(0, 19);
+  const setLocalStorage = (word: WordsType) => {
+    let localArr: Array<string> = JSON.parse(localStorage.getItem('arr') || '[]')
+    if (!localArr?.find((el: string) => el === word._id)) {
+      localArr.push(word._id || word.id || '')
+      setNewWords(newWords + 1)
+    }
+    localStorage.setItem('arr', JSON.stringify(localArr))
+  }
 
-    const arr = [origin, translate, middle];
-    const randomNum = getRandomInt(0, 2);
+  function setQuestion() {
+    const translate = getRandomInt(0, 19);
+
+    const arr = [indexWord, translate];
+    const randomNum = getRandomInt(0, 1);
     const resultNum = arr[randomNum];
 
-    setWord(words, origin, resultNum)
+    setWord(words, indexWord, resultNum)
+    setIndexWord(indexWord + 1)
+
+    setLocalStorage(words[indexWord])
   }
 
   function toggleVolume() {
@@ -66,7 +86,7 @@ const SprintGame: React.FC = () => {
   function isCorrect() {
     if (word?.originWordId === word?.translateWordId) {
       volume && new Audio(correctSound).play();
-      setCorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+      setCorrectAnswer({id: word!.originWordId, origin: word!.originWord, translate: word!.translateWord, audio: word!.audio, result: true, word: word!.word})
       setLongestStrike(longestStrike + 1)
       if (winStrike === 3) {
         setWinStrike(0)
@@ -85,7 +105,7 @@ const SprintGame: React.FC = () => {
       setBird(0)
       setWinstrikeScore(0)
       setWinStrike(0)
-      setIncorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+      setIncorrectAnswer({id: word!.originWordId, origin: word!.originWord, translate: word!.translateWord, audio: word!.audio, result: false, word: word!.word})
 
       if (longestWinStrike < longestStrike) {
         setLongestWinStrike(longestStrike)
@@ -98,7 +118,7 @@ const SprintGame: React.FC = () => {
   function isIncorrect() {
     if (word?.originWordId !== word?.translateWordId) {
       volume && new Audio(correctSound).play();
-      setCorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+      setCorrectAnswer({id: word!.originWordId, origin: word!.originWord, translate: word!.translateWord, audio: word!.audio, result: true, word: word!.word})
       setLongestStrike(longestStrike + 1)
       if (winStrike === 3) {
         setWinStrike(0)
@@ -117,7 +137,7 @@ const SprintGame: React.FC = () => {
       setBird(0)
       setWinstrikeScore(0)
       setWinStrike(0)
-      setIncorrectAnswer({origin: word!.originWord, translate: word!.translateWord, audio: word!.audio})
+      setIncorrectAnswer({id: word!.originWordId, origin: word!.originWord, translate: word!.translateWord, audio: word!.audio, result: false, word: word!.word})
 
       if (longestWinStrike < longestStrike) {
         setLongestWinStrike(longestStrike)
@@ -138,7 +158,11 @@ const SprintGame: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchWords(location.state)
+    if (isLogin) {
+      fetchWordsAgreggate(location?.state.group, location.state.page, location.state.learned)
+    } else {
+      fetchWords(location.state.group, location.state.page)
+    }
   }, [])
 
   useEffect(() => {
@@ -150,11 +174,9 @@ const SprintGame: React.FC = () => {
     }
   }, [words])
 
-  console.log(time)
-
   if (loading) {
     return 	<div className={styles.sprintGame}>
-    
+
     </div>
   }
 
@@ -162,10 +184,10 @@ const SprintGame: React.FC = () => {
     return <h1>{error}</h1>
   }
 
-  if (time <= 0) {
+  if (time <= 0 || indexWord === 19) {
     return (
       <div className={styles.sprintGame}>
-        <SprintResult />
+        <SprintResult newWords={newWords}/>
         <NavLink to='/'><Close className={styles.sprintCloseBtn} onClick={resetData}/></NavLink>
       </div>
     )
@@ -174,7 +196,7 @@ const SprintGame: React.FC = () => {
   return (
     <div className={styles.sprintGame} onKeyDown={onKeyDown} tabIndex={0}>
       <div className={styles.sprintGameHeader}>
-        {volume ? <VolumeUp className={styles.sprintVolumeBtn} onClick={toggleVolume}/> : <VolumeOff className={styles.sprintVolumeBtn}  onClick={toggleVolume}/>}  
+        {volume ? <VolumeUp className={styles.sprintVolumeBtn} onClick={toggleVolume}/> : <VolumeOff className={styles.sprintVolumeBtn}  onClick={toggleVolume}/>}
       </div>
       <div className={styles.sprintGameBody}>
         <div className={styles.head}>

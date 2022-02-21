@@ -9,8 +9,8 @@ import styles from './audioCallGame.module.scss'
 import Game from "./game";
 import GameStatistics from "./gameStatistics";
 export type StatistiksType = {
-    words: Array<WordsType> 
-    counter: number 
+    words: Array<WordsType>
+    counter: number
 }
 
 const AudioCallPage = () => {
@@ -22,30 +22,30 @@ const AudioCallPage = () => {
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin);
     const onStartHandler = (group:number, page:number)=>{
         if(isLogin){
-            dispatch(setWordsUser(group, page, true))  
-                
+            dispatch(setWordsUser(group, page, true))
+
         }else dispatch(setWordsGame(group, page))
     }
 
    useEffect(()=>{
     return()=>{
     if(!isLogin){
-        dispatch(setWordsGameAC([])) 
-    }else dispatch(setWordsUserAC([])) 
+        dispatch(setWordsGameAC([]))
+    }else dispatch(setWordsUserAC([]))
     }
    },[])
-    
+
     return (
         <Box className={styles.audioCallWrapper}>{!finished ? <Box className={styles.audioCallContainer}>
-            
+
             {words.length === 0 && <>
                 <Typography variant="h3" component="h3">Аудиовызов</Typography>
             <p className={styles.subtitle}>Вы можете воспользоваться мышькой или клавишами от 1 до 5 для выбора ответа. Используйте пробел для повтроного звучания слова
             Используйте клавишу Enter для подсказки или для перехода к следующему слову</p>
             <Box className={styles.buttonStartContainer} >
             <InputLabel className={styles.labelSelect} id="label">Cложность</InputLabel>
-                <Select className={styles.groopSelect} labelId="label" id="select" 
-                value={group} 
+                <Select className={styles.groopSelect} labelId="label" id="select"
+                value={group}
                 onChange={(e: any) => setGroup(e.target.value)}>{SECTIONS_WORDS.map(g=>{
                 return <MenuItem key={g.name} value={g.group}>{g.group + 1}</MenuItem>
             })}</Select>
@@ -56,12 +56,12 @@ const AudioCallPage = () => {
                     words={words}
                     statistics={statistics}
                     onFinish={setFinished}
-                />    
+                />
             )}
-            
+
         </Box>
         :<GameStatistics statistics={statistics} onFinish={setFinished} />
-        }    
+        }
         </Box>
     );
 };

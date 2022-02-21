@@ -13,15 +13,16 @@ import { SECTIONS_WORDS } from "../common/groopConstants";
 import styles from './boocPage.module.scss'
 import { setIsLoginAC } from "../../redux/userReducer";
 import AudioWordContainer from "../aydioWords/aydioWordsContainer";
-import { useHistory } from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import { SECTIONS_GAME } from "../common/gameConst";
 import { setWordsGame, setWordsUser } from "../../redux/gameReducer";
 import { Box, CardActionArea, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import Preloader from "../preloader/preloader";
+import {useActions} from "../../hooks/useSprint";
+import {SPRINT_GAME} from "../routs";
 const BookPage = ()=>{
-
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
     const dispatch = useDispatch();
     const pages = [...Array(30)].map((e,i)=> i+0)
@@ -32,31 +33,31 @@ const BookPage = ()=>{
     const audio = useRef(new Audio());
     const history = useHistory()
     const pathName = history.location.pathname
-    const learnedWords = (words.filter((el)=>el.userWord?.optional.learned ===true)).length
+    // const learnedWords = (words.filter((el)=> el.userWord!.optional.learned === true)).length
     const isLoading = useSelector<ReducerAppType, boolean>((state) => state.words.isLoading)
-    
+
     let filter = {}
 
-    if(isLogin && pathName ==='/textBook'){  
-      filter={"$and": [{ "page": page }, {"group":group }]}  
+    if(isLogin && pathName ==='/textBook'){
+      filter={"$and": [{ "page": page }, {"group":group }]}
     }
-    if(isLogin && pathName ==='/vocabulary'){  
-      filter={"$or":[{"userWord.difficulty":"hard"}]}  
+    if(isLogin && pathName ==='/vocabulary'){
+      filter={"$or":[{"userWord.difficulty":"hard"}]}
     }
-    
+
     useEffect(() => {
       if(!isLogin && pathName ==='/textBook'){
         dispatch(setWords(group, page))
       } else if(pathName ==='/textBook' && isLogin){
         dispatch(setAgregateWords(group, page, filter))
       } else if(pathName ==='/vocabulary' && isLogin){
-        dispatch(setAgregateWords( group, page, filter)) 
+        dispatch(setAgregateWords( group, page, filter))
       } else {dispatch(setWords(group, page))}
 
     }, [group, page, isLogin])
 
     useEffect(() => {
-        //@ts-ignore 
+        //@ts-ignore
         const isLoginLocalStorage = JSON.parse(localStorage.getItem('user'))
         if(isLoginLocalStorage){
             dispatch(setIsLoginAC(true))
@@ -64,13 +65,13 @@ const BookPage = ()=>{
     }, [isLogin])
 
    const onHandlerGroup=(e: any)=>{
-     
+
        let valueGroup: number = Number(localStorage.getItem('group'))
          valueGroup = +(e.target.value)
-         localStorage.setItem('group', JSON.stringify(valueGroup))  
+         localStorage.setItem('group', JSON.stringify(valueGroup))
         dispatch(setGroupsAC(+e.target.value))
    }
-   
+
    const onHandlerPage=(e: any)=>{
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = +e.target.value
@@ -79,22 +80,22 @@ const BookPage = ()=>{
   }
 
   const onHandlerNextPage = ()=>{
-    if(page===29) return 
+    if(page===29) return
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = page+1
     localStorage.setItem('page', JSON.stringify(valuePage))
    dispatch(setPageAC(page+1))
-   
+
   }
 
   const onHandlerPrevPage = ()=>{
     if(page===0) return
-    
+
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = page-1
     localStorage.setItem('page', JSON.stringify(valuePage))
     dispatch(setPageAC(page-1))
-    
+
   }
     const onHandlerCreateDifficaltWord =(word: WordsType, difficult: string, optional: {})=>{
       if(word.hasOwnProperty('userWord')){
@@ -110,18 +111,18 @@ const BookPage = ()=>{
 
   const onHandlerDeleteDifficaltWord =(word: WordsType, difficulty: string | undefined, optional: {}| undefined)=>{
     dispatch(updateWords(word, difficulty, optional))
-    dispatch(deleteDifficaltyWordsId(word))  
+    dispatch(deleteDifficaltyWordsId(word))
   }
 
   const onHandlerFromDifficaltyToLearned=(word: WordsType, difficulty?:string, optional?: {})=>{
     dispatch(updateWords(word, difficulty, optional))
     setTimeout(()=>{
       dispatch(deleteDifficaltyWordsId(word))
-    },200)  
+    },200)
     setTimeout(() => {
-      dispatch(createUserWord(word,difficulty, optional)) 
-    }, 500);  
-    
+      dispatch(createUserWord(word,difficulty, optional))
+    }, 500);
+
   }
 
   const onHandlerGame =(e: any)=>{
@@ -184,16 +185,22 @@ const BookPage = ()=>{
                   label="Page"
                   onChange={onHandlerGame}
                 >
-                {SECTIONS_GAME.map((g, i) => <MenuItem  key={g.name} value={g.url}>{g.name}</MenuItem>)}
+                  <MenuItem value='/audioCallPage'>Аудиовызов</MenuItem>
+                  <MenuItem><Link to={{
+                    pathname:`${SPRINT_GAME}`,
+                    state: {group: `${group}`, page: `${page}`, learned: true}
+                  }}>Спринт</Link></MenuItem>
+
+                {/*{SECTIONS_GAME.map((g, i) => <MenuItem  key={g.name} value={g.url}>{g.name}</MenuItem>)}*/}
                 </Select>
               </FormControl>
             </Box>
         </div> : ''}
 
-            
+
         <Grid container>
-          {!isLogin && pathName==='/vocabulary' ? <>Необходиомо авторизоваться</> 
-          : 
+          {!isLogin && pathName==='/vocabulary' ? <>Необходиомо авторизоваться</>
+          :
             words.length === 0
               ? <Typography component="h5" variant="h5">Не найдено слов</Typography>
               : words.map((word,ind) => (
@@ -234,34 +241,34 @@ const BookPage = ()=>{
                           {
                             (isLogin && pathName ==='/textBook')
                             ? <>
-                                <button 
-                                 
-                                className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } 
-                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
+                                <button
+
+                                className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' }
+                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false}
                                 onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}
                                 >сложные</button>
-                                <button 
-                               
-                                className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} 
-                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
+                                <button
+
+                                className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''}
+                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false}
                                 onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}
                                 >изученные</button>
-                            
-                                 <span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span> 
-                                
-                              </> 
-                            : (isLogin && pathName ==='/vocabulary' ) 
+
+                                 {/*<span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span>*/}
+
+                              </>
+                            : (isLogin && pathName ==='/vocabulary' )
                             ? <>
-                                <button 
-          
+                                <button
+
                                 onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</button>
-                                <button 
-                                 
+                                <button
+
                                 onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}
                                 >в изученные слова</button>
-                                <span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span>
+                                {/*<span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span>*/}
                               </>
-                              
+
                             : ''
                           }
                         </div>
@@ -275,7 +282,7 @@ const BookPage = ()=>{
       </div>}
       </>
     );
-   
+
 };
 
 

@@ -12,6 +12,10 @@ const initialState: SprintState = {
     correctAnswer: [],
     incorrectAnswer: [],
     longestWinStrike: 0,
+    page: 0,
+    group: null,
+    option: [],
+    newWords: 0,
 };
 
 const SprintGameReducer = (state = initialState, action: SprintAction): SprintState => {
@@ -38,11 +42,21 @@ const SprintGameReducer = (state = initialState, action: SprintAction): SprintSt
             return {...state, incorrectAnswer: [...state.incorrectAnswer, action.payload]}
         case SprintActionTypes.RESET_DATA:
             return {...state, incorrectAnswer: [], correctAnswer: [], totalScore: 0, winStrike: 0, winStrikeScore: 10, bird: 0}
+        case SprintActionTypes.SET_OPTION:
+            return {...state, option: action.payload}
+        case SprintActionTypes.SET_PAGE:
+            return {...state, option: action.payload}
+        case SprintActionTypes.SET_GROUP:
+            return {...state, option: action.payload}
         case SprintActionTypes.SET_LONGEST_WINSTRIKE:
             return {...state, longestWinStrike: action.payload}
-        default: 
+        case SprintActionTypes.SET_USER_WORDS:
+            return {...state, loading: false, error: null, words: action.payload}
+        case SprintActionTypes.SET_NEW_WORDS:
+            return {...state, newWords: action.payload}
+        default:
             return state
     }
-};  
+};
 
 export default SprintGameReducer;

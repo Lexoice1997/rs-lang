@@ -2,31 +2,37 @@
 import correct from '../../assets/audio/correct.mp3'
 //@ts-ignore
 import error from '../../assets/audio/error.mp3'
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Box, Button, IconButton, Zoom } from '@material-ui/core';
+import {useCallback, useEffect, useRef, useState} from "react";
+import {Box, Button, IconButton, Zoom} from '@material-ui/core';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import { createUserGameWord, createUserWord, deleteDifficaltyWordsId, updateWords, WordsType } from '../../redux/wordsReducer';
-import { StatistiksType } from './audioCollPage';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  createUserGameWord,
+  createUserWord,
+  deleteDifficaltyWordsId,
+  updateWords,
+  WordsType
+} from '../../redux/wordsReducer';
+import {StatistiksType} from './audioCollPage';
+import {useDispatch, useSelector} from 'react-redux';
 import styles from './audioCallGame.module.scss'
-import { setNewWordsAC } from '../../redux/gameReducer';
-import { ReducerAppType } from '../../redux/store';
+import {setNewWordsAC} from '../../redux/gameReducer';
+import {ReducerAppType} from '../../redux/store';
 import Preloader from '../preloader/preloader';
 
 const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
 
-const shuffleArray = (array:any) => {
+const shuffleArray = (array: any) => {
   array.sort(() => Math.random() - 0.5);
 }
 
 type PropsType = {
   words: Array<WordsType>
   statistics: StatistiksType
-  onFinish: (el: boolean)=>void
+  onFinish: (el: boolean) => void
 }
-const Game = ({ words, statistics, onFinish}:any) => {
- 
+const Game = ({words, statistics, onFinish}: any) => {
+
   const [current, setCurrent] = useState<number>(0);
   const [list, setList] = useState([]);
   const [answer, setAnswer] = useState<WordsType | null>(null);
@@ -34,22 +40,22 @@ const Game = ({ words, statistics, onFinish}:any) => {
   const [sound, setSound] = useState<boolean>(true);
   const dispatch = useDispatch()
   const currentWord: WordsType = words[current]; //1 элемент из массива
- 
-  const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin);
-  
-  
-  const [currentAudio, setCurrentAudio]=useState<HTMLAudioElement| null>()
 
-  useEffect(()=>{
+  const isLogin = useSelector<ReducerAppType, boolean>((state) => state.user.isLogin);
+
+
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>()
+
+  useEffect(() => {
     const currentAudio = new Audio(`${baseUrl}/${words[current].audio}`);
     setCurrentAudio(currentAudio)
   }, [current]);
 
-  const setLocalStorage =(word: WordsType)=>{
-    let localArr: Array<string> =JSON.parse(localStorage.getItem('arr') || '[]') 
-      if(!localArr?.find((el: string)=>el===word._id)){
-        localArr.push(word._id || word.id || '')
-      }
+  const setLocalStorage = (word: WordsType) => {
+    let localArr: Array<string> = JSON.parse(localStorage.getItem('arr') || '[]')
+    if (!localArr?.find((el: string) => el === word._id)) {
+      localArr.push(word._id || word.id || '')
+    }
     localStorage.setItem('arr', JSON.stringify(localArr))
   }
 
@@ -61,16 +67,16 @@ const Game = ({ words, statistics, onFinish}:any) => {
     setCurrent(current + 1); // шагаем по массиву слов
     setAnswer(null);
     setSkip(false);
- }, [words, onFinish, current]);
+  }, [words, onFinish, current]);
 
-  const onWordPlay = () => {  
-    currentAudio?.play();   
+  const onWordPlay = () => {
+    currentAudio?.play();
   };
 
   const onHandlerAnswer = useCallback(
     (answerWord, skip = false) => {
       if (answer) return;
-      const isAnswerCorrect = (currentWord.id ?? currentWord._id ) === (answerWord.id ?? answerWord._id)&& !skip;
+      const isAnswerCorrect = (currentWord.id ?? currentWord._id) === (answerWord.id ?? answerWord._id) && !skip;
       let count = currentWord.userWord?.optional.count ? currentWord.userWord?.optional.count : 0
       let correctCount = currentWord.userWord?.optional.correct ? currentWord.userWord?.optional.correct : 0
       let uncorrectCount = currentWord.userWord?.optional.uncorrect ? currentWord.userWord?.optional.uncorrect : 0
@@ -79,47 +85,85 @@ const Game = ({ words, statistics, onFinish}:any) => {
         correctCount = correctCount + 1
         sound && new Audio(correct).play();
         statistics.current.longestWinStrike += 1
-        statistics.current.words.push({ ...currentWord, correct: true, newWord: true}); 
+        statistics.current.words.push({...currentWord, correct: true, newWord: true});
         setLocalStorage(currentWord)
-        if(isLogin){
-          if(currentWord.hasOwnProperty('userWord')){
+        if (isLogin) {
+          if (currentWord.hasOwnProperty('userWord')) {
             //@ts-ignore
             const dif = currentWord.userWord.difficulty
-            if(currentWord.userWord?.optional.count === 2 && currentWord.userWord.difficulty!=='hard'){ 
-              dispatch(updateWords(currentWord, dif, {learned: true, count: count, correct: correctCount, uncorrect: uncorrectCount}))
-            } else if(currentWord.userWord?.difficulty ==='hard' && currentWord.userWord?.optional.count === 4){
-              dispatch(updateWords(currentWord, 'easy', {learned: true, count: count, correct: correctCount, uncorrect: uncorrectCount}))
-              setTimeout(()=>{
+            if (currentWord.userWord?.optional.count === 2 && currentWord.userWord.difficulty !== 'hard') {
+              dispatch(updateWords(currentWord, dif, {
+                learned: true,
+                count: count,
+                correct: correctCount,
+                uncorrect: uncorrectCount
+              }))
+            } else if (currentWord.userWord?.difficulty === 'hard' && currentWord.userWord?.optional.count === 4) {
+              dispatch(updateWords(currentWord, 'easy', {
+                learned: true,
+                count: count,
+                correct: correctCount,
+                uncorrect: uncorrectCount
+              }))
+              setTimeout(() => {
                 dispatch(deleteDifficaltyWordsId(currentWord))
               }, 0)
               setTimeout(() => {
-                dispatch(createUserWord(currentWord, 'easy', {learned: true, count: count, correct: correctCount, uncorrect: uncorrectCount})) 
-              }, 500);             
-            } else { 
-              dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: correctCount, uncorrect: uncorrectCount}))}    
+                dispatch(createUserWord(currentWord, 'easy', {
+                  learned: true,
+                  count: count,
+                  correct: correctCount,
+                  uncorrect: uncorrectCount
+                }))
+              }, 500);
+            } else {
+              dispatch(updateWords(currentWord, dif, {
+                learned: false,
+                count: count,
+                correct: correctCount,
+                uncorrect: uncorrectCount
+              }))
+            }
           } else {
-            dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: correctCount, uncorrect: uncorrectCount})) 
+            dispatch(createUserGameWord(currentWord, {
+              learned: false,
+              count: count,
+              correct: correctCount,
+              uncorrect: uncorrectCount
+            }))
           }
         }
-       
-        
+
+
       } else {
         count = 0
         uncorrectCount = uncorrectCount + 1
         statistics.current.longestWinStrike = 0
         sound && new Audio(error).play();
-        statistics.current.words.push({ ...currentWord, correct: false, newWord: true});
+        statistics.current.words.push({...currentWord, correct: false, newWord: true});
         setLocalStorage(currentWord)
         dispatch(setNewWordsAC(currentWord))
-       if(isLogin){
-        if(currentWord.hasOwnProperty('userWord') ){
-          //@ts-ignore
-          let dif = currentWord.userWord.difficulty
-         if(currentWord.userWord?.optional.learned===true){
-           dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: correctCount, uncorrect: uncorrectCount}))
-         }
-       } else {dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: correctCount, uncorrect: uncorrectCount})) }
-       }
+        if (isLogin) {
+          if (currentWord.hasOwnProperty('userWord')) {
+            //@ts-ignore
+            let dif = currentWord.userWord.difficulty
+            if (currentWord.userWord?.optional.learned === true) {
+              dispatch(updateWords(currentWord, dif, {
+                learned: false,
+                count: count,
+                correct: correctCount,
+                uncorrect: uncorrectCount
+              }))
+            }
+          } else {
+            dispatch(createUserGameWord(currentWord, {
+              learned: false,
+              count: count,
+              correct: correctCount,
+              uncorrect: uncorrectCount
+            }))
+          }
+        }
       }
       setAnswer(answerWord);
       setSkip(skip);
@@ -144,9 +188,9 @@ const Game = ({ words, statistics, onFinish}:any) => {
   }, [current]);
 
   useEffect(() => {
-    const keyHandler = (e:any) => {
+    const keyHandler = (e: any) => {
       switch (e.code) {
-        case 'Digit1'|| 'Numpad1':
+        case 'Digit1' || 'Numpad1':
           onHandlerAnswer(list[0]);
           break;
         case 'Digit2' || 'Numpad2':
@@ -177,18 +221,18 @@ const Game = ({ words, statistics, onFinish}:any) => {
     return () => {
       window.removeEventListener('keydown', keyHandler);
     };
-    
+
   }, [onHandlerAnswer, list, onWordPlay, onHandlerNext]);
 
 
   const ViewAnswer = () => {
     return (
-       <Zoom in={true}>
+      <Zoom in={true}>
         <Box className={styles.ansverContainer}>
-          <Box className={styles.ansverIcon} style={{ backgroundImage: `url(${baseUrl}/${currentWord.image})` }} />
+          <Box className={styles.ansverIcon} style={{backgroundImage: `url(${baseUrl}/${currentWord.image})`}}/>
           <Box className={styles.ansverWord}>
             <IconButton className={styles.ansverVolumeButton} color="default" component="span" onClick={onWordPlay}>
-              <VolumeUpIcon className={styles.iconVolumeButton} />
+              <VolumeUpIcon className={styles.iconVolumeButton}/>
             </IconButton>
             {currentWord.word}
           </Box>
@@ -199,7 +243,7 @@ const Game = ({ words, statistics, onFinish}:any) => {
 
   return (
     <>
-       <Box className={styles.container}>
+      <Box className={styles.container}>
         <Box className={styles.content}>
           {
             !answer &&
@@ -209,32 +253,36 @@ const Game = ({ words, statistics, onFinish}:any) => {
               </IconButton>
             </Box>
           }
-          {answer && <ViewAnswer />}
+          {answer && <ViewAnswer/>}
         </Box>
         <Box className={styles.answersContainer}>
-          {list && list.map((word:WordsType, i:number) => (
+          {list && list.map((word: WordsType, i: number) => (
             <Box
-            className={`
+              className={`
             ${styles.answers}
-            ${answer ? ((word.id??word._id) === (answer.id??answer?._id) && (answer.id?? answer?._id) === (currentWord.id??currentWord._id)) && styles.answerCorrect : ''}
-            ${answer ? ((word.id??word._id) === (answer.id??answer?._id) && (answer.id??answer?._id) !== (currentWord.id??currentWord._id)) && styles.answerUncorrect : ''}
-            ${answer ? ((word.id??word._id) !== (answer.id??answer?._id) && (currentWord.id??currentWord._id) !== (word.id??word._id) && answer) && styles.unselectedWordsStyle:''}
-            ${answer ?  ((word.id??word._id) !== (answer.id??answer?._id) && (currentWord.id??currentWord._id) === (word.id??word._id) && answer) && styles.wrongChoisRightWordStyle : ''}
+            ${answer ? ((word.id ?? word._id) === (answer.id ?? answer?._id) && (answer.id ?? answer?._id) === (currentWord.id ?? currentWord._id)) && styles.answerCorrect : ''}
+            ${answer ? ((word.id ?? word._id) === (answer.id ?? answer?._id) && (answer.id ?? answer?._id) !== (currentWord.id ?? currentWord._id)) && styles.answerUncorrect : ''}
+            ${answer ? ((word.id ?? word._id) !== (answer.id ?? answer?._id) && (currentWord.id ?? currentWord._id) !== (word.id ?? word._id) && answer) && styles.unselectedWordsStyle : ''}
+            ${answer ? ((word.id ?? word._id) !== (answer.id ?? answer?._id) && (currentWord.id ?? currentWord._id) === (word.id ?? word._id) && answer) && styles.wrongChoisRightWordStyle : ''}
           `}
               key={i}
               component="div"
               onClick={() => onHandlerAnswer(word)}
             >
               <Box component="span" className={styles.answerNum}>
-                {((word._id ?? word.id) === (answer?._id ?? answer?.id) && (answer?._id ?? answer?.id) === (currentWord.id ?? currentWord._id) && !skip) ? <CheckCircleIcon className={styles.iconSuccess} /> : ''}
+                {((word._id ?? word.id) === (answer?._id ?? answer?.id) && (answer?._id ?? answer?.id) === (currentWord.id ?? currentWord._id) && !skip) ?
+                  <CheckCircleIcon className={styles.iconSuccess}/> : ''}
               </Box>
               <Box className={styles.answerWord} component="span">{word.wordTranslate}</Box>
             </Box>
           ))}
         </Box>
-        {!answer && <Button className={styles.notKnow} variant="outlined" onClick={() => onHandlerAnswer(currentWord, true)}>не знаю</Button>}
-        {answer && <Button className={styles.next} variant="outlined"  onClick={() => onHandlerNext()}>вперед</Button>}
-        <Box className={`${styles.sound} ${sound ? styles.volumeSound : styles.muteSound}`} onClick={() => setSound(sound => !sound)}></Box>
+        {!answer &&
+        <Button className={styles.notKnow} variant="outlined" onClick={() => onHandlerAnswer(currentWord, true)}>не
+          знаю</Button>}
+        {answer && <Button className={styles.next} variant="outlined" onClick={() => onHandlerNext()}>вперед</Button>}
+        <Box className={`${styles.sound} ${sound ? styles.volumeSound : styles.muteSound}`}
+             onClick={() => setSound(sound => !sound)}></Box>
       </Box>
     </>
   );
