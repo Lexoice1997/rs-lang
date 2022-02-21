@@ -1,6 +1,7 @@
 {
   "name": "my-app",
   "version": "0.1.0",
+  "homepage": "https://adzinetskatsiaryna.github.io/rs-lang",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
@@ -19,6 +20,7 @@
     "@types/react-router-dom": "^5.3.2",
     "axios": "^0.25.0",
     "formik": "^2.2.9",
+    "gh-pages": "^3.2.3",
     "node-sass": "^7.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -38,7 +40,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

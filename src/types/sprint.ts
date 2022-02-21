@@ -27,7 +27,6 @@ export interface SprintState {
   incorrectAnswer: Array<ResultWord>;
   longestWinStrike: number;
 }
-
 export enum SprintActionTypes {
   FETCH_WORDS = 'FETCH_WORDS',
   SET_WORD = 'SET_WORD',

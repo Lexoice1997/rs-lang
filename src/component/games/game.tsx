@@ -25,7 +25,7 @@ type PropsType = {
   statistics: StatistiksType
   onFinish: (el: boolean)=>void
 }
-const Game = ({ words, statistics, onFinish}:any) => {
+const Game = ({words, statistics, onFinish}:any) => {
  
   const [current, setCurrent] = useState<number>(0);
   const [list, setList] = useState([]);
@@ -38,7 +38,7 @@ const Game = ({ words, statistics, onFinish}:any) => {
   const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin);
   
   
-  const [currentAudio, setCurrentAudio]=useState<HTMLAudioElement| null>()
+  const [currentAudio, setCurrentAudio]=useState<HTMLAudioElement | null>(new Audio(`${baseUrl}/${words[current].audio}`))
 
   useEffect(()=>{
     const currentAudio = new Audio(`${baseUrl}/${words[current].audio}`);
@@ -80,8 +80,9 @@ const Game = ({ words, statistics, onFinish}:any) => {
         sound && new Audio(correct).play();
         statistics.current.longestWinStrike += 1
         statistics.current.words.push({ ...currentWord, correct: true, newWord: true}); 
-        setLocalStorage(currentWord)
+        
         if(isLogin){
+          setLocalStorage(currentWord)
           if(currentWord.hasOwnProperty('userWord')){
             //@ts-ignore
             const dif = currentWord.userWord.difficulty
@@ -109,9 +110,9 @@ const Game = ({ words, statistics, onFinish}:any) => {
         statistics.current.longestWinStrike = 0
         sound && new Audio(error).play();
         statistics.current.words.push({ ...currentWord, correct: false, newWord: true});
-        setLocalStorage(currentWord)
-        dispatch(setNewWordsAC(currentWord))
+        
        if(isLogin){
+        setLocalStorage(currentWord)
         if(currentWord.hasOwnProperty('userWord') ){
           //@ts-ignore
           let dif = currentWord.userWord.difficulty

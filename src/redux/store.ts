@@ -1,6 +1,5 @@
 import { applyMiddleware, combineReducers, createStore } from "redux";
 import thunk from "redux-thunk";
-import AudioCollGameReducer from "./audioCollReducer";
 import SprintGameReducer from "./sprintReducer";
 import StatistiksReducer from "./statistiksReducer";
 import WordsReducer from "./wordsReducer";
@@ -12,7 +11,6 @@ const reducer = combineReducers({
     words: WordsReducer,
     game: GameReducer,
     statistiks: StatistiksReducer,
-    audioCollGame: AudioCollGameReducer,
     sprintGame: SprintGameReducer
 });
 export type RootState = ReturnType<typeof store.getState>

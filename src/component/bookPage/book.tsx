@@ -2,14 +2,17 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
+import Tooltip from '@material-ui/core/Tooltip';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import Typography from "@material-ui/core/Typography";
-import { ChangeEvent, useEffect, useRef} from "react";
+import { ChangeEvent, useEffect, useRef, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerAppType } from "../../redux/store";
 import { createUserWord, deleteDifficaltyWordsId, setAgregateWords, setGroupsAC, setPageAC, setWords, updateWords, WordsType } from "../../redux/wordsReducer";
 import { SECTIONS_WORDS } from "../common/groopConstants";
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import IconButton from '@material-ui/core/IconButton';
+import LocalLibraryIcon from '@material-ui/icons/LocalLibrary';
 import styles from './boocPage.module.scss'
 import { setIsLoginAC } from "../../redux/userReducer";
 import AudioWordContainer from "../aydioWords/aydioWordsContainer";
@@ -20,6 +23,7 @@ import { Box, CardActionArea, InputLabel, MenuItem, Select } from '@material-ui/
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import Preloader from "../preloader/preloader";
+import api, { getUserId } from "../../api/api";
 const BookPage = ()=>{
 
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
@@ -32,8 +36,10 @@ const BookPage = ()=>{
     const audio = useRef(new Audio());
     const history = useHistory()
     const pathName = history.location.pathname
-    const learnedWords = (words.filter((el)=>el.userWord?.optional.learned ===true)).length
+    const learnedWords = (words.filter((el)=>el.userWord?.optional.learned ===true)).length ? (words.filter((el)=>el.userWord?.optional.learned ===true)).length : 0
     const isLoading = useSelector<ReducerAppType, boolean>((state) => state.words.isLoading)
+    const [bg, setBg]=useState<string | undefined>('rgba(225, 140, 230, 1)')
+    const userId = getUserId()
     
     let filter = {}
 
@@ -63,12 +69,30 @@ const BookPage = ()=>{
         }
     }, [isLogin])
 
-   const onHandlerGroup=(e: any)=>{
-     
-       let valueGroup: number = Number(localStorage.getItem('group'))
-         valueGroup = +(e.target.value)
-         localStorage.setItem('group', JSON.stringify(valueGroup))  
-        dispatch(setGroupsAC(+e.target.value))
+    async function putStatistics (){
+      try{
+       const dataStatistics = await api.get(`/users/${userId}/statistics`)
+       .catch((err)=>{})
+       await api.put(`/users/${userId}/statistics`, {"learnedWords": learnedWords, "optional": {
+           ...dataStatistics?.data?.optional
+       } })
+      } catch(err){
+       console.log(err)
+      }
+   }
+useEffect(()=>{
+  if(isLogin)putStatistics()
+},[learnedWords])
+
+   const onHandlerGroup=(e: any)=>{ 
+    let valueGroup: number = Number(localStorage.getItem('group'))
+    valueGroup = +(e.target.value)
+    localStorage.setItem('group', JSON.stringify(valueGroup))  
+    dispatch(setGroupsAC(+e.target.value))
+    let bg = SECTIONS_WORDS.find((g)=>{
+     return g.group===(e.target.value)
+    })
+    setBg(bg?.backgroundBtn)
    }
    
    const onHandlerPage=(e: any)=>{
@@ -93,8 +117,7 @@ const BookPage = ()=>{
     let valuePage: number = Number(localStorage.getItem('page'))
     valuePage = page-1
     localStorage.setItem('page', JSON.stringify(valuePage))
-    dispatch(setPageAC(page-1))
-    
+    dispatch(setPageAC(page-1)) 
   }
     const onHandlerCreateDifficaltWord =(word: WordsType, difficult: string, optional: {})=>{
       if(word.hasOwnProperty('userWord')){
@@ -124,6 +147,7 @@ const BookPage = ()=>{
     
   }
 
+
   const onHandlerGame =(e: any)=>{
     if(learnedWords===20)return
     if(e.target.value ==='/audioCallPage'){
@@ -136,6 +160,8 @@ const BookPage = ()=>{
     }
    }
   }
+
+
     return (
       <>
         {isLoading ? <Preloader/> :<div className={styles.bookPage}>
@@ -150,6 +176,7 @@ const BookPage = ()=>{
                   value={group}
                   label="Group"
                   onChange={onHandlerGroup}
+                  style={{ backgroundColor: `${bg}`}}
                 >
                   {SECTIONS_WORDS.map(g=> <MenuItem  style={{ backgroundColor: `${g.backgroundBtn}`}} key={g.group} value={g.group}>{g.name}</MenuItem>)}
                 </Select>
@@ -188,9 +215,7 @@ const BookPage = ()=>{
                 </Select>
               </FormControl>
             </Box>
-        </div> : ''}
-
-            
+        </div> : ''}      
         <Grid container>
           {!isLogin && pathName==='/vocabulary' ? <>Необходиомо авторизоваться</> 
           : 
@@ -230,41 +255,53 @@ const BookPage = ()=>{
                         <Typography variant="subtitle2" color="textSecondary" className={styles.translate}>
                           {word.textExampleTranslate}
                         </Typography>
-                        <div className={styles.buttons}>
+                        <Typography className={styles.buttons}>
                           {
                             (isLogin && pathName ==='/textBook')
-                            ? <>
-                                <button 
-                                 
-                                className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } 
-                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
-                                onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}
-                                >сложные</button>
-                                <button 
-                               
-                                className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} 
-                                disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
-                                onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}
-                                >изученные</button>
-                            
-                                 <span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span> 
+                            ? <div>
+                                <Tooltip title="добавить в сложные слова">
+                                  <IconButton 
+                                  component="span" 
+                                  
+                                  disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
+                                  onClick={()=>{onHandlerCreateDifficaltWord(word, 'hard', {count: 0} )}}>
+                                  <LocalLibraryIcon className={word.userWord?.difficulty==='hard' ? styles.isDifficaltWord : '' } />      
+                                </IconButton>     
+                                </Tooltip>
+                                <Tooltip title="добавить в изученные слова">
+                                 <IconButton
+                                  component="span"
+                                  
+                                  disabled={word.userWord?.optional?.learned === true || word.userWord?.difficulty==='hard' ? true : false} 
+                                  onClick={()=>{onCreateLearnedWords(word, 'easy', {learned: true, count: 1})}}>
+                                  <ThumbUpAltIcon className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} />
+                                 </IconButton>
+                                </Tooltip>
+                                 <span>угадал</span><span>{word.userWord?.optional.correct ? word.userWord?.optional.correct : 0}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect ? word.userWord?.optional.uncorrect :0}</span> 
                                 
-                              </> 
+                              </div> 
                             : (isLogin && pathName ==='/vocabulary' ) 
-                            ? <>
-                                <button 
-          
-                                onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>убрать из сложных слов</button>
-                                <button 
-                                 
+                            ? <div>
+                                <Tooltip title = "убрать из сложных слов">
+                                <IconButton
+                                component="span"
+                                onClick={()=>{onHandlerDeleteDifficaltWord(word, "easy", {learned: false})}}>
+                                   <LocalLibraryIcon/>  
+                                </IconButton>
+                                </Tooltip>
+                                <Tooltip title='в изученные слова'>
+                                <IconButton 
+                                component="span"                                 
                                 onClick={()=>{onHandlerFromDifficaltyToLearned(word, "easy", {learned: true})}}
-                                >в изученные слова</button>
-                                <span>угадал</span><span>{word.userWord?.optional.correct}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect}</span>
-                              </>
+                                ><ThumbUpAltIcon/>
+                                </IconButton>
+                                </Tooltip>
+                                <span>угадал</span><span>{word.userWord?.optional.correct?word.userWord?.optional.correct : 0}</span> / <span>не угадал</span><span>{word.userWord?.optional.uncorrect ? word.userWord?.optional.uncorrect : 0}</span>
+                              </div>
                               
                             : ''
                           }
-                        </div>
+                        </Typography>
                       </CardContent>
                     </CardActionArea>
                   </Card>
