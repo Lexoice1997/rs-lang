@@ -4,7 +4,7 @@ import {SET_USER_WORDS} from "../redux/gameReducer";
 export interface Word {
   originWord?: string;
   translateWord?: string;
-  originWordId?: string;
+  originWordId?: string | undefined;
   translateWordId?: string;
   audio?: string;
   word?: WordsType;

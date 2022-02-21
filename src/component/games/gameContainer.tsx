@@ -65,9 +65,9 @@ const GameContainer = ({words, statistics, onFinish}: any)=>{
       (answerWord, skip = false) => {
         if (answer) return;
         const isAnswerCorrect = (currentWord.id ?? currentWord._id ) === (answerWord.id ?? answerWord._id)&& !skip;
-        let count = currentWord.userWord?.optional.count ? currentWord.userWord?.optional.count : 0
-        let correctCount = currentWord.userWord?.optional.correct ? currentWord.userWord?.optional.correct : 0
-        let uncorrectCount = currentWord.userWord?.optional.uncorrect ? currentWord.userWord?.optional.uncorrect : 0
+        let count = currentWord.userWord?.optional?.count ? currentWord.userWord?.optional.count : 0
+        let correctCount = currentWord.userWord?.optional?.correct ? currentWord.userWord?.optional.correct : 0
+        let uncorrectCount = currentWord.userWord?.optional?.uncorrect ? currentWord.userWord?.optional.uncorrect : 0
         if (isAnswerCorrect) {
           count = count + 1
           correctCount = correctCount + 1
@@ -80,9 +80,9 @@ const GameContainer = ({words, statistics, onFinish}: any)=>{
             if(currentWord.hasOwnProperty('userWord')){
               //@ts-ignore
               const dif = currentWord.userWord.difficulty
-              if(currentWord.userWord?.optional.count === 2 && currentWord.userWord.difficulty!=='hard'){ 
+              if(currentWord.userWord?.optional?.count === 2 && currentWord.userWord.difficulty!=='hard'){ 
                 dispatch(updateWords(currentWord, dif, {learned: true, count: count, correct: correctCount, uncorrect: uncorrectCount}))
-              } else if(currentWord.userWord?.difficulty ==='hard' && currentWord.userWord?.optional.count === 4){
+              } else if(currentWord.userWord?.difficulty ==='hard' && currentWord.userWord?.optional?.count === 4){
                 dispatch(updateWords(currentWord, 'easy', {learned: true, count: count, correct: correctCount, uncorrect: uncorrectCount}))
                 setTimeout(()=>{
                   dispatch(deleteDifficaltyWordsId(currentWord))
@@ -110,7 +110,7 @@ const GameContainer = ({words, statistics, onFinish}: any)=>{
           if(currentWord.hasOwnProperty('userWord') ){
             //@ts-ignore
             let dif = currentWord.userWord.difficulty
-           if(currentWord.userWord?.optional.learned===true){
+           if(currentWord.userWord?.optional?.learned===true){
              dispatch(updateWords(currentWord, dif, {learned: false, count: count, correct: correctCount, uncorrect: uncorrectCount}))
            }
          } else {dispatch(createUserGameWord(currentWord, {learned: false, count: count, correct: correctCount, uncorrect: uncorrectCount})) }

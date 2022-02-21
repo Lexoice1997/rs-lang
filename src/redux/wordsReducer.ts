@@ -49,7 +49,7 @@ export type WordsType = {
   wordTranslate: string,
   textMeaningTranslate: string,
   textExampleTranslate: string,
-  userWord?: UserWordType
+  userWord?: UserWordType | undefined
 }
 export type InitialStateWordsType = {
   words: Array<WordsType>

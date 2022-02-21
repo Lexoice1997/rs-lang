@@ -19,7 +19,7 @@ import {ReducerAppType} from "../../../redux/store";
 import {WordsType} from "../../../redux/wordsReducer";
 
 const SprintGame: React.FC = () => {
-  let location = useLocation();
+  let location = useLocation <any>();
   let [time, setTime] = useState(60);
   const [newWords, setNewWords] = useState<number>(0);
   const [volume, setVolume] = useState(false);
@@ -156,7 +156,7 @@ const SprintGame: React.FC = () => {
       isCorrect()
     }
   }
-
+console.log(isLogin)
   useEffect(() => {
     if (isLogin) {
       fetchWordsAgreggate(location?.state.group, location.state.page, location.state.learned)
@@ -166,7 +166,7 @@ const SprintGame: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (words.length > 0) {
+    if (words?.length > 0) {
       let timerId = setInterval(() => setTime(time -= 1), 1000);
       setTimeout(() => (clearInterval(timerId)), 60000);
       setWinstrikeScore(bird)

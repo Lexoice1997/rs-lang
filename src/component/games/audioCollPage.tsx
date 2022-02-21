@@ -6,7 +6,6 @@ import { ReducerAppType } from "../../redux/store";
 import { WordsType } from "../../redux/wordsReducer";
 import { SECTIONS_WORDS } from "../common/groopConstants";
 import styles from './audioCallGame.module.scss'
-import Game from "./game";
 import GameContainer from "./gameContainer";
 import GameStatistics from "./gameStatistics";
 export type StatistiksType = {
@@ -52,7 +51,7 @@ const AudioCallPage = () => {
             })}</Select>
             <Button variant="outlined" className={styles.startGameButton} onClick={()=>{onStartHandler(group, Math.round(Math.random() * 29))}}>Начать игру</Button></Box>
             </>}
-            {words.length > 0  && !finished && (
+            {words?.length > 0  && !finished && (
                 <GameContainer
                     words={words}
                     statistics={statistics}

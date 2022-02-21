@@ -40,7 +40,7 @@ const BookPage = () => {
   const audio = useRef(new Audio());
   const history = useHistory()
   const pathName = history.location.pathname
-  const learnedWords = (words.filter((el) => el.userWord?.optional.learned === true)).length ? (words.filter((el) => el.userWord?.optional.learned === true)).length : 0
+  const learnedWords: number | undefined = (words.filter((el:any) => el.userWord?.optional.learned === true)).length ? (words.filter((el:any) => el.userWord?.optional.learned === true)).length : 0
   const isLoading = useSelector<ReducerAppType, boolean>((state) => state.words.isLoading)
   const [bg, setBg] = useState<string | undefined>('rgba(225, 140, 230, 1)')
   const userId = getUserId()
@@ -200,12 +200,11 @@ const BookPage = () => {
                   onChange={onHandlerPage}
                 >
                   <MenuItem value='/audioCallPage'>Аудиовызов</MenuItem>
-                  <MenuItem><Link to={{
+                  <MenuItem value = '/sprint'><Link to={{
                     pathname:`${SPRINT_GAME}`,
                     state: {group: `${group}`, page: `${page}`, learned: true}
-                  }}>Спринт</Link></MenuItem>
-
-                {/*{SECTIONS_GAME.map((g, i) => <MenuItem  key={g.name} value={g.url}>{g.name}</MenuItem>)}*/}
+                  }}>Спринт</Link>
+                  </MenuItem>
                   {pages.map((p, i) => <MenuItem key={i} value={p}>{p + 1}</MenuItem>)}
                 </Select>
               </FormControl>
@@ -285,11 +284,12 @@ const BookPage = () => {
                                     <ThumbUpAltIcon className={word.userWord?.optional?.learned === true ? styles.isLearnedWord : ''} />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip title='ответил правильно'><SentimentSatisfiedAltIcon/></Tooltip>
-                                <span> {word.userWord?.optional.correct ? word.userWord?.optional.correct : 0} </span>
+                                <Tooltip title='ответил правильно'><SentimentSatisfiedAltIcon/></Tooltip>                               
+                                <span> {word.userWord?.optional?.correct ? word.userWord?.optional.correct : 0} </span>
                                 /
                                 <Tooltip title='ответил неправильно'><SentimentVeryDissatisfiedIcon/></Tooltip>
-                                <span> {word.userWord?.optional.uncorrect ? word.userWord?.optional.uncorrect : 0} </span>
+                                
+                                <span> {word.userWord?.optional?.uncorrect ? word.userWord?.optional.uncorrect : 0} </span>
 
                               </div>
                               : (isLogin && pathName === '/vocabulary')
@@ -311,12 +311,11 @@ const BookPage = () => {
 
                                   </Tooltip>
                                   <Tooltip title='ответил правильно'><SentimentSatisfiedAltIcon/></Tooltip>
-                                  <span> {word.userWord?.optional.correct ? word.userWord?.optional.correct : 0} </span>
+                                  <span> {word.userWord?.optional?.correct ? word.userWord?.optional.correct : 0} </span>
                                   /
                                   <Tooltip title='ответил неправильно'><SentimentVeryDissatisfiedIcon/></Tooltip>
-                                  <span> {word.userWord?.optional.uncorrect ? word.userWord?.optional.uncorrect : 0} </span>
+                                  <span> {word.userWord?.optional?.uncorrect ? word.userWord?.optional.uncorrect : 0} </span>
                                 </div>
-
                                 : ''
                           }
                         </Typography>
