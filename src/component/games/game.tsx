@@ -25,7 +25,7 @@ type PropsType = {
   statistics: StatistiksType
   onFinish: (el: boolean)=>void
 }
-const Game = ({words, statistics, onFinish}:any) => {
+const Game = ({ words, statistics, onFinish}:any) => {
  
   const [current, setCurrent] = useState<number>(0);
   const [list, setList] = useState([]);
