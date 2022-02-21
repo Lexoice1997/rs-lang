@@ -150,7 +150,6 @@ const SprintGame: React.FC = () => {
     }
   }, [words])
 
-  console.log(time)
 
   if (loading) {
     return 	<div className={styles.sprintGame}>

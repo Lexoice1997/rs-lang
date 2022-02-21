@@ -19,7 +19,7 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     const dispatch = useDispatch();
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
     const userId = getUserId()
-    const numberOfNewWords = JSON.parse(localStorage.getItem('arr') || '[]')
+    const numberOfNewWords = (JSON.parse(localStorage.getItem('arr') || '[]')).length
     
     const correctWords = statistics.current.words.filter((word:any) => word.correct);
     const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
@@ -33,6 +33,7 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
         await api.put(`/users/${userId}/statistics`, {"learnedWords": dataStatistics?.data?.learnedWords, "optional": {
             ...dataStatistics?.data?.optional,
             audioCall: {percentCorrectAnswers: percentCorrectAnswers, numberOfNewWords: numberOfNewWords, longestWinStrike: longestWinStrike},
+            //sprintGame
         } })
        } catch(err){
         console.log(err)
@@ -42,9 +43,6 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
      useEffect(()=>{
       if(isLogin) putStatistics()
      }, [])
-    
-    
-    
     
     const onAudioPlay = useCallback((audioPath) => {
         //@ts-ignore
