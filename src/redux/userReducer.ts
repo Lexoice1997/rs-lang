@@ -126,6 +126,7 @@ export const createNewUser = (username:string, email:string,  password:string)=>
 
 export const logaut = ()=>(dispatch: any)=>{
     localStorage.removeItem("user");
+    localStorage.removeItem("arr")
     dispatch(setUserAC({}));
     dispatch(setIsLoginAC(false))
 }

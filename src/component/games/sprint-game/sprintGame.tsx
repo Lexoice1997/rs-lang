@@ -173,7 +173,6 @@ const SprintGame: React.FC = () => {
       setQuestion()
     }
   }, [words])
-
   if (loading) {
     return 	<div className={styles.sprintGame}>
 

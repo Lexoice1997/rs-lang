@@ -37,7 +37,6 @@ export interface SprintState {
   option: any;
   newWords: number;
 }
-
 export enum SprintActionTypes {
   FETCH_WORDS = 'FETCH_WORDS',
   SET_WORD = 'SET_WORD',
