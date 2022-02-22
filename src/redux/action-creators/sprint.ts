@@ -7,12 +7,13 @@ export const fetchWords = (group: any, page: any) => {
   const userId = getUserId()
 
   return async (dispatch: Dispatch<SprintAction>) => {
+    debugger
     try {
       dispatch({type: SprintActionTypes.FETCH_WORDS})
       const response1 = await axios.get(`https://rs-lang-scorpion.herokuapp.com/words?group=${group}&page=${page}`)
       const optionResponse =  await api.get(`/users/${userId}/words`);
       dispatch({type: SprintActionTypes.FETCH_WORDS_SUCCESS, payload: response1.data})
-      dispatch({type: SprintActionTypes.SET_OPTION, payload: optionResponse.data})
+      //dispatch({type: SprintActionTypes.SET_OPTION, payload: optionResponse.data})
     } catch(e) {
       dispatch({
         type: SprintActionTypes.FETCH_WORDS_ERROR,

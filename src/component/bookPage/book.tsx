@@ -25,7 +25,6 @@ import { Box, CardActionArea, InputLabel, MenuItem, Select } from '@material-ui/
 import { FormControl } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import Preloader from "../preloader/preloader";
-import {useActions} from "../../hooks/useSprint";
 import {SPRINT_GAME} from "../routs";
 import api, { getUserId } from "../../api/api";
 const BookPage = () => {
@@ -200,7 +199,7 @@ const BookPage = () => {
                   onChange={onHandlerPage}
                 >
                   <MenuItem value='/audioCallPage'>Аудиовызов</MenuItem>
-                  <MenuItem value = '/sprint'><Link to={{
+                  <MenuItem value ='/sprint'><Link to={{
                     pathname:`${SPRINT_GAME}`,
                     state: {group: `${group}`, page: `${page}`, learned: true}
                   }}>Спринт</Link>

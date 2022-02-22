@@ -156,8 +156,8 @@ const SprintGame: React.FC = () => {
       isCorrect()
     }
   }
-console.log(isLogin)
   useEffect(() => {
+    debugger
     if (isLogin) {
       fetchWordsAgreggate(location?.state.group, location.state.page, location.state.learned)
     } else {
