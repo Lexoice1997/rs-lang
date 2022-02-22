@@ -203,12 +203,6 @@ const BookPage = () => {
                   label="Page"
                   onChange={onHandlerPage}
                 >
-                  <MenuItem value='/audioCallPage'>Аудиовызов</MenuItem>
-                  <MenuItem value ='/sprint'><Link to={{
-                    pathname:`${SPRINT_GAME}`,
-                    state: {group: `${group}`, page: `${page}`, learned: true}
-                  }}>Спринт</Link>
-                  </MenuItem>
                   {pages.map((p, i) => <MenuItem key={i} value={p}>{p + 1}</MenuItem>)}
                 </Select>
               </FormControl>
@@ -221,10 +215,15 @@ const BookPage = () => {
               <Select
                 labelId="game-select-label"
                 id="demo-simple-select"
-                label="Page"
+                label="Game"
                 onChange={onHandlerGame}
               >
-                {SECTIONS_GAME.map((g, i) => <MenuItem key={g.name} value={g.url}>{g.name}</MenuItem>)}
+                <MenuItem  value='/audioCallPage'>Аудио вызов</MenuItem>
+                <MenuItem value ='/sprint'><Link to={{
+                    pathname:`${SPRINT_GAME}`,
+                    state: {group: `${group}`, page: `${page}`, learned: true}
+                  }}>Спринт</Link>
+                  </MenuItem>
               </Select>
             </FormControl>
           </Box>

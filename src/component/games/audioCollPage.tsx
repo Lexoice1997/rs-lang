@@ -38,7 +38,7 @@ const AudioCallPage = () => {
     return (
         <Box className={styles.audioCallWrapper}>{!finished ? <Box className={styles.audioCallContainer}>
 
-            {words.length === 0 && <>
+            {words?.length === 0 && <>
                 <Typography variant="h3" component="h3">Аудиовызов</Typography>
             <p className={styles.subtitle}>Вы можете воспользоваться мышькой или клавишами от 1 до 5 для выбора ответа. Используйте пробел для повтроного звучания слова
             Используйте клавишу Enter для подсказки или для перехода к следующему слову</p>
