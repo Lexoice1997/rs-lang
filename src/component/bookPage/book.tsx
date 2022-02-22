@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReducerAppType } from "../../redux/store";
-import { createUserWord, deleteDifficaltyWordsId, setAgregateWords, setGroupsAC, setPageAC, setWords, updateWords, WordsType } from "../../redux/wordsReducer";
+import { createUserWord, deleteDifficaltyWordsId, setAgregateWords, setGroupsAC, setLearnedWords, setPageAC, setWords, updateWords, WordsType } from "../../redux/wordsReducer";
 import { SECTIONS_WORDS } from "../common/groopConstants";
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import IconButton from '@material-ui/core/IconButton';
@@ -39,8 +39,9 @@ const BookPage = () => {
   const audio = useRef(new Audio());
   const history = useHistory()
   const pathName = history.location.pathname
-  const learnedWords: number | undefined = (words.filter((el:any) => el.userWord?.optional.learned === true)).length ? (words.filter((el:any) => el.userWord?.optional.learned === true)).length : 0
+  // const learnedWords: number | undefined = (words.filter((el:any) => el.userWord?.optional.learned === true)).length ? (words.filter((el:any) => el.userWord?.optional.learned === true)).length : 0
   const isLoading = useSelector<ReducerAppType, boolean>((state) => state.words.isLoading)
+  const learnedWords = (useSelector<ReducerAppType, Array<WordsType>>((state) => state.words.learnedWords)).length
   const [bg, setBg] = useState<string | undefined>('rgba(225, 140, 230, 1)')
   const userId = getUserId()
 
@@ -85,8 +86,12 @@ const BookPage = () => {
       console.log(err)
     }
   }
-  useEffect(() => {
-    if (isLogin) putStatistics()
+  useEffect(() => { 
+    if (isLogin){
+      filter = { "$or": [{ "userWord.optional.learned": true }] }
+      dispatch(setLearnedWords(filter))
+      putStatistics()
+    } 
   }, [learnedWords])
 
   const onHandlerGroup = (e: any) => {

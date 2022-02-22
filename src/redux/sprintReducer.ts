@@ -22,7 +22,6 @@ const SprintGameReducer = (state = initialState, action: SprintAction): SprintSt
     switch (action.type) {
         
         case SprintActionTypes.FETCH_WORDS:
-            debugger
             return {...state, loading: true, error: null, words: []};
         case SprintActionTypes.FETCH_WORDS_SUCCESS:
             return {...state, loading: false, error: null, words: action.payload}

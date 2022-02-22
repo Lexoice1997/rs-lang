@@ -17,6 +17,7 @@ export const DELETE_LEARNED_WORDS = 'DELETE_LEARNED_WORDS'
 export const CREATE_USER_GAME_WORD = 'CREATE_USER_GAME_WORD,'
 export const CREATE_USER_WORD = 'CREATE_USER_WORD'
 export const SET_LOADING_WORD = 'SET_LOADING_WORD'
+export const SET_LEARNED_WORDS = 'SET_LEARNED_WORDS'
 
 export type UserWordType = {
   difficulty?: string | undefined,
@@ -58,7 +59,7 @@ export type InitialStateWordsType = {
   isLoading: boolean
   error: string
   wordPlaying: string | null,
-
+  learnedWords: Array<WordsType>
 }
 const dataGroupFormLocalStorage: string | null = localStorage.getItem('group')
 const group: number = +JSON.parse(dataGroupFormLocalStorage !== null ? dataGroupFormLocalStorage : '0')
@@ -73,6 +74,7 @@ const initialState: InitialStateWordsType = {
   isLoading: false,
   error: '',
   wordPlaying: null,
+  learnedWords: []
 }
 export type ActionType =
   | ReturnType<typeof loadingAC>
@@ -87,6 +89,7 @@ export type ActionType =
   | ReturnType<typeof createUserGameWordAC>
   | ReturnType<typeof createUserWordAC>
   | ReturnType<typeof setLoadingWordAC>
+  | ReturnType<typeof setLearnedWordsAC>
 
 
 const WordsReducer = (state = initialState, action: ActionType): InitialStateWordsType => {
@@ -106,6 +109,9 @@ const WordsReducer = (state = initialState, action: ActionType): InitialStateWor
     }
     case SET_ERROR_WORDS: {
       return {...state, error: action.error}
+    }
+    case SET_LEARNED_WORDS: {
+      return {...state, learnedWords: action.data}
     }
     case APDATE_WORDS: {
 
@@ -245,6 +251,14 @@ export const createUserWordAC = (word: WordsType, difficulty?: string, optional?
     optional
   } as const
 }
+
+const setLearnedWordsAC = (data: any)=>{
+  return{
+    type: SET_LEARNED_WORDS,
+    data
+  }as const
+}
+
 //thunc
 
 export const updateWords = (word: WordsType, difficulty: string | undefined | null, optional: {} | undefined) => (dispatch: Dispatch<ActionType>, getState: () => ReducerAppType): void => {
@@ -289,7 +303,7 @@ export const setWords = (group: number, page: number) => (dispatch: Dispatch<Act
 
 export const setAgregateWords = (group: number, page: number, filter: any) => (dispatch: Dispatch<ActionType>, getState: () => ReducerAppType): void => {
   const userId = getState().user.user.userId
-  const wordsPerPage: number = 3600
+  const wordsPerPage: number = 4000
   dispatch(setLoadingWordAC(true))
   api.get(`/users/${userId}/aggregatedWords`, {
     params: {
@@ -307,7 +321,20 @@ export const setAgregateWords = (group: number, page: number, filter: any) => (d
       dispatch(setLoadingWordAC(false))
     })
 }
-
+export const setLearnedWords = (filter: any)=>(dispatch: Dispatch<ActionType>, getState: () => ReducerAppType): void=>{
+  const userId = getState().user.user.userId
+  const wordsPerPage: number = 4000
+  api.get(`/users/${userId}/aggregatedWords`, {
+    params: {
+      wordsPerPage, filter
+    }
+  }).then((res)=>{
+    dispatch(setLearnedWordsAC(res.data[0].paginatedResults))
+  })
+  .catch(err => {
+    dispatch(setErrorWordsAC(err.response ? err.response.data : err.message))
+  })
+}
 export const deleteDifficaltyWordsId = (word: WordsType) => (dispatch: Dispatch<ActionType>, getState: () => ReducerAppType): void => {
 
   const userId = getState().user.user.userId

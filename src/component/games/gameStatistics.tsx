@@ -7,12 +7,10 @@ import Typography from "@material-ui/core/Typography";
 import { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { setWordsGameAC, setWordsUserAC } from "../../redux/gameReducer";
+import { setWordsGameAC } from "../../redux/gameReducer";
 import { ReducerAppType } from "../../redux/store";
 import styles from './audioCallStatistics.module.scss'
-import { WordsType } from "../../redux/wordsReducer";
 const GameStatistics = ({ statistics, onFinish}:any) => {
-    console.log(statistics)
     const baseUrl = 'https://rs-lang-scorpion.herokuapp.com' 
     const history = useHistory()
     const audio = useRef();
@@ -20,13 +18,11 @@ const GameStatistics = ({ statistics, onFinish}:any) => {
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin)
     const userId = getUserId()
     const numberOfNewWords = (JSON.parse(localStorage.getItem('arr') || '[]')).length
-    
     const correctWords = statistics.current.words.filter((word:any) => word.correct);
     const unCorrectWords = statistics.current.words.filter((word:any) => !word.correct);
     const longestWinStrike = statistics.current.longestWinStrike
-    const percentCorrectAnswers = Math.round(correctWords.length / (correctWords.length + unCorrectWords.legth) * 100)
-   
-   async function putStatistics (){
+    const percentCorrectAnswers = Math.round((correctWords.length / (correctWords.length + unCorrectWords.length) )*100);
+    async function putStatistics (){
        try{
         const dataStatistics = await api.get(`/users/${userId}/statistics`)
         .catch((err)=>{})
