@@ -58,11 +58,11 @@ export const fetchWordsAgreggate = (group: any, page: any, learned: boolean) => 
 
 export const setWord = (words: any, indexOriginWord: number, indexTranslateWord: number): SprintAction => {
   return {type: SprintActionTypes.SET_WORD, payload:
-                                            {originWord: words[indexOriginWord].word,
-                                            translateWord: words[indexTranslateWord].wordTranslate,
-                                            originWordId: (words[indexOriginWord].id ?? words[indexOriginWord]._id),
-                                            translateWordId: (words[indexTranslateWord].id ?? words[indexTranslateWord]._id),
-                                            audio: words[indexOriginWord].audio,
+                                            {originWord: words[indexOriginWord]?.word,
+                                            translateWord: words[indexTranslateWord]?.wordTranslate,
+                                            originWordId: (words[indexOriginWord]?.id ?? words[indexOriginWord]?._id),
+                                            translateWordId: (words[indexTranslateWord]?.id ?? words[indexTranslateWord]?._id),
+                                            audio: words[indexOriginWord]?.audio,
                                             word: words[indexOriginWord]}}
 }
 
