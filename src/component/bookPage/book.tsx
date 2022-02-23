@@ -163,7 +163,7 @@ const BookPage = () => {
         dispatch(setWordsUser(group, page, false))
         history.push(e.target.value)
       } else {
-        dispatch(setWords(group, page))
+        dispatch(setWordsGame(group, page))
         history.push(e.target.value)
       }
     }
