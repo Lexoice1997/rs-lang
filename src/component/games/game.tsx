@@ -22,25 +22,17 @@ import Preloader from '../preloader/preloader';
 
 const baseUrl = 'https://rs-lang-scorpion.herokuapp.com'
 
-const shuffleArray = (array: any) => {
-  array.sort(() => Math.random() - 0.5);
-}
-
-type PropsType = {
-  words: Array<WordsType>
-  statistics: StatistiksType
-  onFinish: (el: boolean) => void
-}
-
-const Game = ({currentWord, onWordPlay, answer, list, onHandlerAnswer, onHandlerNext, setSound, sound, skip}:any) => {
- 
+const Game = ({currentWord, onWordPlay, answer, list, onHandlerAnswer, onHandlerNext, setSound, sound, skip, currentAudio}:any) => {
+  const onWordPlayA = () => { 
+    currentAudio?.play();   
+  };
   const ViewAnswer = () => {
     return (
       <Zoom in={true}>
         <Box className={styles.ansverContainer}>
           <Box className={styles.ansverIcon} style={{backgroundImage: `url(${baseUrl}/${currentWord.image})`}}/>
           <Box className={styles.ansverWord}>
-            <IconButton className={styles.ansverVolumeButton} color="default" component="span" onClick={onWordPlay}>
+            <IconButton className={styles.ansverVolumeButton} color="default" component="span" onClick={()=>onWordPlayA()}>
               <VolumeUpIcon className={styles.iconVolumeButton}/>
             </IconButton>
             {currentWord.word}
@@ -57,7 +49,7 @@ const Game = ({currentWord, onWordPlay, answer, list, onHandlerAnswer, onHandler
           {
             !answer &&
             <Box className={styles.volumeContainer}>
-              <IconButton color="default" component="span" onClick={onWordPlay}>
+              <IconButton color="default" component="span" onClick={()=>onWordPlayA()}>
                 <VolumeUpIcon className={styles.volumeIcon}/>
               </IconButton>
             </Box>

@@ -5,6 +5,7 @@ import { setWordsGame, setWordsGameAC, setWordsUser, setWordsUserAC } from "../.
 import { ReducerAppType } from "../../redux/store";
 import { WordsType } from "../../redux/wordsReducer";
 import { SECTIONS_WORDS } from "../common/groopConstants";
+import Preloader from "../preloader/preloader";
 import styles from './audioCallGame.module.scss'
 import GameContainer from "./gameContainer";
 import GameStatistics from "./gameStatistics";
@@ -20,6 +21,7 @@ const AudioCallPage = () => {
     const [group, setGroup] = useState<number>(0);
     const words = useSelector<ReducerAppType, Array<WordsType>>((state)=>state.game.wordsList);
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin);
+    const isLoading = useSelector<ReducerAppType, boolean>((state)=>state.game.isLoading);
     const onStartHandler = (group:number, page:number)=>{
         if(isLogin){
             dispatch(setWordsUser(group, page, true))
@@ -36,7 +38,8 @@ const AudioCallPage = () => {
    },[])
 
     return (
-        <Box className={styles.audioCallWrapper}>{!finished ? <Box className={styles.audioCallContainer}>
+        <>
+        {isLoading ? <Preloader /> : <Box className={styles.audioCallWrapper}>{!finished ? <Box className={styles.audioCallContainer}>
 
             {words?.length === 0 && <>
                 <Typography variant="h3" component="h3">Аудиовызов</Typography>
@@ -51,7 +54,7 @@ const AudioCallPage = () => {
             })}</Select>
             <Button variant="outlined" className={styles.startGameButton} onClick={()=>{onStartHandler(group, Math.round(Math.random() * 29))}}>Начать игру</Button></Box>
             </>}
-            {words?.length > 0  && !finished && (
+            {words?.length > 0  && !finished &&  (
                 <GameContainer
                     words={words}
                     statistics={statistics}
@@ -62,7 +65,8 @@ const AudioCallPage = () => {
         </Box>
         :<GameStatistics statistics={statistics} onFinish={setFinished} />
         }
-        </Box>
+        </Box>}
+        </>
     );
 };
 

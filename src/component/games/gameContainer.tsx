@@ -30,13 +30,10 @@ const GameContainer = ({words, statistics, onFinish}: any)=>{
     const currentWord: WordsType = words[current]; //1 элемент из массива
    
     const isLogin = useSelector<ReducerAppType, boolean>((state)=>state.user.isLogin);
-    
-    
-    // const [currentAudio, setCurrentAudio]=useState<HTMLAudioElement | null>(null)
-   let currentAudio:any
+   let currentAudio = new Audio(`${baseUrl}/${words[current].audio}`)
+   
     useEffect(()=>{
        currentAudio = new Audio(`${baseUrl}/${words[current].audio}`);
-    //  setCurrentAudio(currentAudio1)
     }, [current]);
   
     const setLocalStorage =(word: WordsType)=>{
@@ -188,6 +185,7 @@ const GameContainer = ({words, statistics, onFinish}: any)=>{
          setSound={setSound}
          sound={sound}
          skip={skip}
+         currentAudio = {currentAudio}
      />   
     )
 }
